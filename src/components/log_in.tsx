@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from "react";
-import { Container, Flex, Input, InputGroup, Stack, InputRightElement, Button, Card, CardHeader, CardBody, Heading, StackDivider, Box } from '@chakra-ui/react'
+import { Container, Flex, Text, Input, InputGroup, Stack, InputRightElement, Button, Card, CardHeader, CardBody, Heading, StackDivider, Box } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom';
 
 type resultProps = {
@@ -12,54 +12,65 @@ function LogIn() {
     const [show, setShow] = React.useState(false);
 
     const handleClick = () => setShow((prevShow) => !prevShow);
-    const [errorMessage, setErrorMessage] = useState('');
     const [inputEmail, setInputEmail] = useState("");
     const [inputPassword, setInputPassword] = useState("");
+    const [errorMsg, setErrorMsg] = useState("");
     const navigate = useNavigate();
 
   const handleEmail = (e: ChangeEvent<HTMLInputElement>) => {
-    // 👇 Store the input value to local state
     setInputEmail(e.target.value);
   };
 
 
   const handlePassword = (e: ChangeEvent<HTMLInputElement>) => {
-    // 👇 Store the input value to local state
     setInputPassword(e.target.value);
   };
 
   const goBack = () => {
-        // This will navigate to first component
-        navigate('/');
-    };
+    navigate('/');
+  };
 
-  const updateWinnersAndLosers = () => 
-    async () => {
-        const data = {
-            method: 'POST',
-            headers: {
-              'accept': 'application/json',
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: new URLSearchParams({
-              'grant_type': '',
-              'username': 'a@example.com',
-              'password': 'string',
-              'scope': '',
-              'client_id': '',
-              'client_secret': ''
-            })
-          };
-        
-          fetch('http://localhost:8009/auth/jwt/login', data)
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => setErrorMessage(error.message));
 
-      // console.log("thirret")
-      console.log(data)
-    };
+  const goHome = () => {
+    navigate('/home');
+  };
 
+  const logIn = async () => {
+    try {
+      const response = await fetch('http://localhost:8009/auth/jwt/login', {
+        method: 'POST',
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+          'grant_type': '',
+          'username': inputEmail,
+          'password': inputPassword,
+          'scope': '',
+          'client_id': '',
+          'client_secret': ''
+        })
+      
+      });
+      const responseJSON = await response.json()
+      if (!response.ok) {
+        if(responseJSON.detail == "LOGIN_BAD_CREDENTIALS"){
+          setErrorMsg("Email or password are wrong!")
+        }
+      }else{
+        goHome()
+      }
+    }catch (error) {
+      console.error(error);
+    }
+
+  };
+
+  const handleLogInClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    logIn();
+  };
  
 
   return (
@@ -67,11 +78,9 @@ function LogIn() {
       <h1>
         <Flex minWidth='max-content' alignItems='center' gap='2'>
             <Box p='4'>
-            <button onClick={goBack}> 
-                <Button colorScheme='teal' variant='outline'>
-                    Back
-                </Button>
-            </button>
+              <Button colorScheme='teal' variant='outline' onClick={goBack}>
+                  Back
+              </Button>
             </Box>
         </Flex>
       </h1>
@@ -112,15 +121,14 @@ function LogIn() {
             </Box>
 
             <Box>
-              <button onClick={updateWinnersAndLosers()}> 
-                <Button colorScheme='teal' variant='outline'>
-                  Log in
-                </Button>
-              </button>
+              <Button colorScheme='teal' variant='outline' onClick={handleLogInClick}>
+                Log in
+              </Button>
             </Box>
             </Stack>
           </CardBody>
       </Card>
+      <Text fontSize='sm'>{errorMsg}</Text>
     </Container>
     </div>
     );

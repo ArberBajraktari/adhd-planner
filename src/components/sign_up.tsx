@@ -1,41 +1,40 @@
 import React, { ChangeEvent } from 'react';
-import { Link } from 'react-router-dom';
-import { useState, useEffect } from "react";
-import { Container, Flex, Input, InputGroup, Stack, InputRightElement, Button, Card, CardHeader, CardBody, Heading, StackDivider, Box } from '@chakra-ui/react'
+import { useState } from "react";
+import { Container, Text, Flex, Input, InputGroup, Stack, InputRightElement, Button, Card, CardHeader, CardBody, Heading, StackDivider, Box } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom';
 
-type resultProps = {
-  detail: string;
-};
 
 function SignUp() {
   const [show, setShow] = React.useState(false);
-
   const handleClick = () => setShow((prevShow) => !prevShow);
-  const [result, setResult] = useState<resultProps[]>([]);
   const [inputEmail, setInputEmail] = useState("");
   const [inputPassword, setInputPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
 
   const handleEmail = (e: ChangeEvent<HTMLInputElement>) => {
-    // 👇 Store the input value to local state
     setInputEmail(e.target.value);
   };
 
 
   const handlePassword = (e: ChangeEvent<HTMLInputElement>) => {
-    // 👇 Store the input value to local state
     setInputPassword(e.target.value);
   };
 
   const goBack = () => {
-    // This will navigate to first component
     navigate('/');
-};
+  };
 
-  const updateWinnersAndLosers = () => 
-    async () => {
-      const data = await fetch('http://localhost:8009/auth/register', {
+
+  const handleRegisterUserClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    registerUser();
+  };
+ 
+
+  const registerUser = async () => {
+    try {
+      const response = await fetch('http://localhost:8009/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -45,14 +44,21 @@ function SignUp() {
           is_superuser: false,
           is_verified: false
         })
-      })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error(error))
-      
-      // console.log("thirret")
-      console.log(data)
-    };
+      });
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        if (responseData.detail === "REGISTER_USER_ALREADY_EXISTS"){
+          setErrorMsg("User already exists!")
+        }
+      } else {
+        setErrorMsg("User registered!")
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
  
 
   return (
@@ -61,11 +67,9 @@ function SignUp() {
 
         <Flex minWidth='max-content' alignItems='center' gap='2'>
             <Box p='4'>
-            <button onClick={goBack}> 
-                <Button colorScheme='teal' variant='outline'>
-                    Back
-                </Button>
-            </button>
+              <Button colorScheme='teal' variant='outline' onClick={goBack}>
+                  Back
+              </Button>
             </Box>
         </Flex>
     <Container mt={20}>
@@ -105,15 +109,14 @@ function SignUp() {
             </Box>
 
             <Box>
-              <button onClick={updateWinnersAndLosers()}> 
-                <Button colorScheme='teal' variant='outline'>
+                <Button colorScheme='teal' variant='outline' onClick={handleRegisterUserClick}>
                   Sign up
                 </Button>
-              </button>
             </Box>
             </Stack>
           </CardBody>
       </Card>
+      <Text fontSize='sm'>{errorMsg}</Text>
     </Container>
     </div>
     );
