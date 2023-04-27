@@ -2,21 +2,13 @@ import React, { useEffect } from 'react';
 import { Button } from "@chakra-ui/react";
 import { useLocalStorage } from 'react-use';
 import { useNavigate } from 'react-router-dom';
+import Sidebar from './sidebar';
 
 function Home() {
 
     const [logged, setLogged, remove] = useLocalStorage('logged', 'dummy');
     const navigate = useNavigate();
 
-    const logOut = () => {
-        setLogged("false")
-      };
-
-    const handleLogOutClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault()
-        logOut()
-        navigate('/');
-      };
 
     useEffect(() => {
         if(logged === "false"){
@@ -27,10 +19,8 @@ function Home() {
     return (
         
         <div className="App">
-            {logged}
-            <Button colorScheme='teal' variant='outline' onClick={handleLogOutClick}>
-                Log out
-            </Button>
+            <Sidebar></Sidebar>
+            
         </div>
       );
     
