@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from "react";
 import { Container, Flex, Text, Input, InputGroup, Stack, InputRightElement, Button, Card, CardHeader, CardBody, Heading, StackDivider, Box } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom';
+import { useLocalStorage } from 'react-use';
 
 type resultProps = {
   detail: string;
@@ -10,6 +11,7 @@ type resultProps = {
 
 function LogIn() {
     const [show, setShow] = React.useState(false);
+    const [logged, setLogged, remove] = useLocalStorage('logged', 'dummy');
 
     const handleClick = () => setShow((prevShow) => !prevShow);
     const [inputEmail, setInputEmail] = useState("");
@@ -25,6 +27,7 @@ function LogIn() {
   const handlePassword = (e: ChangeEvent<HTMLInputElement>) => {
     setInputPassword(e.target.value);
   };
+  
 
   const goBack = () => {
     navigate('/');
@@ -59,6 +62,7 @@ function LogIn() {
           setErrorMsg("Email or password are wrong!")
         }
       }else{
+        setLogged("true")
         goHome()
       }
     }catch (error) {
@@ -71,7 +75,12 @@ function LogIn() {
     event.preventDefault();
     logIn();
   };
- 
+  
+  useEffect(() => {
+      if(logged === "true"){
+          navigate('/home');
+      }
+  }, [logged, navigate]);
 
   return (
       <div className="App">

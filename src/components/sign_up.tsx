@@ -1,10 +1,12 @@
 import React, { ChangeEvent } from 'react';
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocalStorage } from 'react-use';
 import { Container, Text, Flex, Input, InputGroup, Stack, InputRightElement, Button, Card, CardHeader, CardBody, Heading, StackDivider, Box } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom';
 
 
 function SignUp() {
+  const [logged, setLogged, remove] = useLocalStorage('logged', 'dummy');
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow((prevShow) => !prevShow);
   const [inputEmail, setInputEmail] = useState("");
@@ -59,6 +61,12 @@ function SignUp() {
       console.error(error);
     }
   };
+
+  useEffect(() => {
+      if(logged === "true"){
+          navigate('/home');
+      }
+  }, [logged, navigate]);
  
 
   return (
