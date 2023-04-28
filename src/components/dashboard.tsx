@@ -1,11 +1,11 @@
 import {
     Box,
-    Flex,
-    Button,
+    Grid,
+    GridItem,
     useColorModeValue,
-    Stack,
+    SimpleGrid,
     useColorMode,
-    DrawerContent,
+    Heading,
     HStack,
     DrawerOverlay,
     useDisclosure,
@@ -17,11 +17,15 @@ import {
   } from "@chakra-ui/react";
   import { useNavigate } from 'react-router-dom';
   import { useLocalStorage } from 'react-use';
-  import { useState } from "react";
+  import { useEffect, useState } from "react";
+import ParkingLot from "./parking_lot";
+import NavbarMenu from "./navbar_menu";
+import DashboardToday from './dashboard_today';
+import DashboardBacklog from "./dashboard_backlog";
   
   
-  export default function Dashboard() {
-    const { isOpen, onOpen, onClose } = useDisclosure()
+  export default function Dashboard(props: any) {
+    const [value, setValue] = useState('');
     const { colorMode, toggleColorMode } = useColorMode();
     const navigate = useNavigate();
     const [logged, setLogged, remove] = useLocalStorage('logged', 'dummy');
@@ -30,24 +34,21 @@ import {
     const logOut = () => {
       setLogged("false")
     };
-  
-  const handleLogOutClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-      event.preventDefault()
-      logOut()
-      navigate('/');
-    };
 
     return (
         <div>
             <Box
-                    h='100vh'
-                    bg={useColorModeValue("gray.100", "gray.900")}
-                    px={9}
-                    width={["70%"]}
-                    float='left'
-                >
-                    
-                </Box>
+              h='100vh'
+              bg={useColorModeValue("gray.100", "gray.900")}
+              width={'85%'}
+              float='left'
+            >
+              {props.value === 'today' ? (
+                <DashboardToday value={props.value} />
+              ) : (
+                <DashboardBacklog value={props.value} />
+              )}
+            </Box>
       </div>
       );
 }

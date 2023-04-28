@@ -20,7 +20,7 @@ import {
   import { useState } from "react";
   
   
-  export default function NavbarFooter(props: { logged: any; }) {
+  export default function NavbarFooter(props: { logged: any;}) {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const { colorMode, toggleColorMode } = useColorMode();
     const navigate = useNavigate();
@@ -51,13 +51,7 @@ import {
   
     if(props.logged === 'true'){
       return (
-        <div>
-          <Box h='100vh' w={'15%'} float='left'>
-            <Flex color='white' h='100%' flexDirection="column">
-              <Box w='100%' h='90%' bg='green.500' float='left'>
-                <Text>Box 1</Text>
-              </Box>
-              <Box w='100%' h='10%' bg='green.500'>
+              <Box bg='green.500' h='100vh'>
                 <Button
                     backgroundColor="#f8985b"
                     _hover={{ bg: "#e54a2e", color: "white" }}
@@ -65,26 +59,17 @@ import {
                     variant="solid"
                     size={["sm", "md"]}
                     id="resumeBtn"
-                    alignSelf="flex-end"
-                    onClick={handleLogOutClick}>
+                    onClick={handleLogOutClick}
+                    alignSelf="flex-end">
                     <a target="_blank">
                       Log out
                     </a>
                 </Button>
               </Box>
-            </Flex>
-          </Box>
-        </div>)
+              )
     }else{
       return (
-        <div>
-          <Box h='100vh' w={'15%'} float='left'>
-            <Flex color='white' h='100%' flexDirection="column">
-              <Box w='100%' h='90%' bg='green.500' float='left'>
-                <Text>Box 1</Text>
-              </Box>
-              <Box w='100%' h='10%' bg='green.500'>
-                <Flex minWidth='max-content' alignItems='center' gap='2'>
+                <Box bg='green.500' h='100vh'>
                     <ButtonGroup gap='2' m={3}>
                         <Button
                             backgroundColor="#b1e6ea"
@@ -97,11 +82,9 @@ import {
                             _hover={{ bg: "#2198c3", color: "white" }}
                             onClick={gotToLogIn}>Log in</Button>
                     </ButtonGroup>
-                </Flex>
-              </Box>
-            </Flex>
-          </Box>
-        </div>)
+                
+                </Box>
+                )
     }
   }
     
