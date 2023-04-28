@@ -2,6 +2,7 @@ import { Button, ButtonGroup, Heading, Flex, Box, Spacer } from '@chakra-ui/reac
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from "react";
 import { useLocalStorage } from 'react-use';
+import Navbar from './sidebar';
 
 function Main() {
     const navigate = useNavigate();
@@ -21,24 +22,14 @@ function Main() {
     };
 
     useEffect(() => {
-        if(logged === "true"){
+        if (logged === "true") {
             navigate('/home');
         }
     }, [logged, navigate]);
 
     return (
         <div className="App">
-        <Flex minWidth='max-content' alignItems='center' gap='2'>
-            <Box p='2'  m={3}>
-                <Heading size='md'>ADHD Planner</Heading>
-            </Box>
-            <Spacer />
-            <ButtonGroup gap='2'  m={3}>
-                <Button colorScheme='teal' onClick={gotToSignUp}>Sign Up</Button>
-                <Button colorScheme='teal' onClick={gotToLogIn}>Log in</Button>
-            </ButtonGroup>
-
-            </Flex>
+            <Navbar logged={logged}></Navbar>
         </div>
     );
 }

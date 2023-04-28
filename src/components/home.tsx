@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
-import { Button } from "@chakra-ui/react";
+import { Button, Flex } from "@chakra-ui/react";
 import { useLocalStorage } from 'react-use';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from './sidebar';
+import Dashboard from './dashboard';
+import ParkingLot from './parking_lot';
+import Navbar from './sidebar';
 
 function Home() {
 
@@ -19,8 +21,9 @@ function Home() {
     return (
         
         <div className="App">
-            <Sidebar></Sidebar>
-            
+            <Navbar logged={logged}></Navbar>
+            <Dashboard></Dashboard>
+            <ParkingLot></ParkingLot>
         </div>
       );
     
