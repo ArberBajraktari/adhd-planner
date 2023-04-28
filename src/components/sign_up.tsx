@@ -4,9 +4,8 @@ import { useLocalStorage } from 'react-use';
 import { Container, Text, Flex, Input, InputGroup, Stack, InputRightElement, Button, Card, CardHeader, CardBody, Heading, StackDivider, Box } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom';
 
-
 function SignUp() {
-  const [logged, setLogged, remove] = useLocalStorage('logged', 'dummy');
+  const [logged] = useLocalStorage('logged', 'dummy');
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow((prevShow) => !prevShow);
   const [inputEmail, setInputEmail] = useState("");
@@ -18,7 +17,6 @@ function SignUp() {
     setInputEmail(e.target.value);
   };
 
-
   const handlePassword = (e: ChangeEvent<HTMLInputElement>) => {
     setInputPassword(e.target.value);
   };
@@ -27,13 +25,11 @@ function SignUp() {
     navigate('/');
   };
 
-
   const handleRegisterUserClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     registerUser();
   };
  
-
   const registerUser = async () => {
     try {
       const response = await fetch('http://localhost:8009/auth/register', {
@@ -63,23 +59,21 @@ function SignUp() {
   };
 
   useEffect(() => {
-      if(logged === "true"){
-          navigate('/home');
-      }
+    if(logged === "true"){
+        navigate('/home');
+    }
   }, [logged, navigate]);
  
 
   return (
-
-      <div className="App">
-
-        <Flex minWidth='max-content' alignItems='center' gap='2'>
-            <Box p='4'>
-              <Button colorScheme='teal' variant='outline' onClick={goBack}>
-                  Back
-              </Button>
-            </Box>
-        </Flex>
+    <div className="App">
+      <Flex minWidth='max-content' alignItems='center' gap='2'>
+        <Box p='4'>
+          <Button colorScheme='teal' variant='outline' onClick={goBack}>
+              Back
+          </Button>
+        </Box>
+      </Flex>
     <Container mt={20}>
       <Card>
         <CardHeader>
@@ -95,7 +89,6 @@ function SignUp() {
               onChange={handleEmail}
               value={inputEmail}/>
             </Box>
-
             <Box>
               <Heading size='xs' textTransform='uppercase'>
                 Password:
@@ -115,14 +108,13 @@ function SignUp() {
                 </InputRightElement>
               </InputGroup>
             </Box>
-
             <Box>
                 <Button colorScheme='teal' variant='outline' onClick={handleRegisterUserClick}>
                   Sign up
                 </Button>
             </Box>
-            </Stack>
-          </CardBody>
+          </Stack>
+        </CardBody>
       </Card>
       <Text fontSize='sm'>{errorMsg}</Text>
     </Container>

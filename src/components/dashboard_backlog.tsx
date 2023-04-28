@@ -1,11 +1,9 @@
 
 import {
-    Box, GridItem, Heading
+    Box, Heading
   } from "@chakra-ui/react";
-import React, { useState, useEffect } from 'react';
 
 export default function DashboardBacklog(props: any) {
-  const [value, setValue] = useState('');
 
 
   return (

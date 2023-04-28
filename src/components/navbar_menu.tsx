@@ -1,19 +1,14 @@
 import {
     Box,
-    Button,
-    Avatar
+    Button
   } from "@chakra-ui/react";
   
   export default function NavbarMenu(props: any) {
-    const buttonStyles = {
-        width: '100%',
-      };
 
-      const openTab = (item: string) => {
-        props.onTabOpen(item)
-      }
+    const openTab = (item: string) => {
+    props.onTabOpen(item)
+    }
 
-  
     return (
         <Box w='100vh' bg='green.500' flexDirection="column">
             <Button w='100%' rounded={'none'} mt='2' h='20' bg='green.400'
