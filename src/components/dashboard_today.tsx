@@ -11,12 +11,12 @@ export default function DashboardToday(props: any) {
       h='100%'
       color='blackAlpha.700'
       fontWeight='bold'>
-      <GridItem pl='2' bg='red.100' area={'dashboard'}>
+      <GridItem pl='2' bg='#F6FFDE' area={'dashboard'}>
         <Heading>
           Today
         </Heading>
       </GridItem>
-      <GridItem pl='2' bg='red.200' area={'parking'}>
+      <GridItem pl='2' bg='#C9DBB2' area={'parking'}>
         <Heading>
           Parking Lot
         </Heading> 

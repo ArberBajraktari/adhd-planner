@@ -12,7 +12,7 @@ import DashboardReports from "./dashboard_reports";
         <div>
           <Box
             h='100vh'
-            bg={useColorModeValue("gray.100", "gray.900")}
+            bg='#F6FFDE'
             width={'85%'}
             float='left'>
 

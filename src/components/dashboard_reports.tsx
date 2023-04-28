@@ -4,7 +4,7 @@ import {
 
 export default function DashboardReports(props: any) {
   return (
-    <Box bg='red.100' h='100%'>
+    <Box bg='#F6FFDE' h='100%'>
         <Heading>Reports</Heading>
     </Box>
     );
