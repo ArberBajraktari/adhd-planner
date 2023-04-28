@@ -22,6 +22,8 @@ import ParkingLot from "./parking_lot";
 import NavbarMenu from "./navbar_menu";
 import DashboardToday from './dashboard_today';
 import DashboardBacklog from "./dashboard_backlog";
+import DashboardProjects from "./dashboard_projects";
+import DashboardReports from "./dashboard_reports";
   
   
   export default function Dashboard(props: any) {
@@ -44,10 +46,15 @@ import DashboardBacklog from "./dashboard_backlog";
               float='left'
             >
               {props.value === 'today' ? (
-                <DashboardToday value={props.value} />
-              ) : (
-                <DashboardBacklog value={props.value} />
-              )}
+              <DashboardToday value={props.value} />
+            ) : props.value === 'backlog' ? (
+              <DashboardBacklog value={props.value} />
+            ) : props.value === 'projects' ? (
+              <DashboardProjects value={props.value} />
+            ) : (
+              <DashboardReports value={props.value} />
+            )}
+
             </Box>
       </div>
       );
