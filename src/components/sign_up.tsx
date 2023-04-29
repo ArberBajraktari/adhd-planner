@@ -5,7 +5,7 @@ import { Container, Modal, ModalOverlay, ModalContent,
           ModalHeader, ModalCloseButton, ModalBody, 
           ModalFooter, Text, Flex, Input, InputGroup, Stack, 
           InputRightElement, Button, Card, CardHeader, 
-          CardBody, Heading, StackDivider, Box, useDisclosure, useToast } from '@chakra-ui/react'
+          CardBody, Heading, StackDivider, Box, useDisclosure, useToast, FormControl, FormLabel } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom';
 
 function SignUp(props: any) {
@@ -106,39 +106,39 @@ function SignUp(props: any) {
                 <CardBody>
                   <Stack divider={<StackDivider />} spacing='4'>
                     <Box>
-                      <Heading size='xs' textTransform='uppercase'>
-                        Username:
-                      </Heading>
-                      <Input placeholder="email" 
-                      onChange={handleUsername}
-                      value={inputUsername}/>
+                      <FormControl isRequired>
+                        <FormLabel>Username:</FormLabel>
+                        <Input placeholder="email" 
+                        onChange={handleUsername}
+                        value={inputUsername} />
+                      </FormControl>
                     </Box>
                     <Box>
-                      <Heading size='xs' textTransform='uppercase'>
-                        ** Email: **
-                      </Heading>
-                      <Input placeholder="email" 
-                      onChange={handleEmail}
-                      value={inputEmail}/>
+                      <FormControl isRequired>
+                        <FormLabel>Email:</FormLabel>
+                        <Input placeholder="email" 
+                        onChange={handleEmail}
+                        value={inputEmail}/>
+                      </FormControl>
                     </Box>
                     <Box>
-                      <Heading size='xs' textTransform='uppercase'>
-                        ** Password: **
-                      </Heading>
-                      <InputGroup size="md">
-                        <Input
-                          pr="4.5rem"
-                          type={show ? "text" : "password"}
-                          placeholder="Enter password"
-                          onChange={handlePassword}
-                          value={inputPassword}
-                        />
-                        <InputRightElement width="4.5rem">
-                          <Button h="1.75rem" size="sm" onClick={handleClick}>
-                            {show ? "Hide" : "Show"}
-                          </Button>
-                        </InputRightElement>
-                      </InputGroup>
+                      <FormControl isRequired>
+                        <FormLabel>Password:</FormLabel>
+                        <InputGroup size="md">
+                          <Input
+                            pr="4.5rem"
+                            type={show ? "text" : "password"}
+                            placeholder="Enter password"
+                            onChange={handlePassword}
+                            value={inputPassword}
+                          />
+                          <InputRightElement width="4.5rem">
+                            <Button h="1.75rem" size="sm" onClick={handleClick}>
+                              {show ? "Hide" : "Show"}
+                            </Button>
+                          </InputRightElement>
+                        </InputGroup>
+                      </FormControl>
                     </Box>
                     <Box>
                         <Button colorScheme='teal' variant='outline' onClick={handleRegisterUserClick}>
