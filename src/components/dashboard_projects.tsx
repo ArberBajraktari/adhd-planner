@@ -5,7 +5,8 @@ import {
 export default function DashboardProjects(props: any) {
 
   return (
-    <Box bg='#F6FFDE' h='100%'>
+    <Box bg='#eeecff' h='100%'
+      boxShadow='inner'>
         <Heading>Projects</Heading>
     </Box>
     );

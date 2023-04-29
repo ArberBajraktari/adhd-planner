@@ -7,7 +7,8 @@ export default function DashboardBacklog(props: any) {
 
 
   return (
-    <Box bg='#F6FFDE' h='100%'>
+    <Box bg='#eeecff' h='100%' 
+      boxShadow='inner'>
         <Heading>Backlog</Heading>
     </Box>
     );

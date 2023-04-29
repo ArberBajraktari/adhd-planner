@@ -1,18 +1,25 @@
 import React, { ChangeEvent } from 'react';
 import { useState, useEffect } from "react";
-import { Container, Flex, Text, Input, InputGroup, Stack, InputRightElement, Button, Card, CardHeader, CardBody, Heading, StackDivider, Box, ModalOverlay, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader } from '@chakra-ui/react'
+import { Container, Flex, Text, Input, InputGroup, Stack, 
+          InputRightElement, Button, Card, CardHeader, CardBody, 
+          Heading, StackDivider, Box, ModalOverlay, Modal, ModalBody, 
+          ModalCloseButton, ModalContent, ModalHeader, useToast, Spinner, useDisclosure, AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay 
+        } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom';
 import { useLocalStorage } from 'react-use';
 
 function LogIn(props: any) {
     const [show, setShow] = React.useState(false);
     const [logged, setLogged] = useLocalStorage('logged', 'dummy');
-
     const handleClick = () => setShow((prevShow) => !prevShow);
     const [inputEmail, setInputEmail] = useState("");
     const [inputPassword, setInputPassword] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
     const navigate = useNavigate();
+    const toast = useToast()
+    const cancelRef = React.useRef<HTMLInputElement>(null)
+    const [isOpen, setIsOpen] = useState(false);
+    const onClose = () => setIsOpen(false);
 
     const handleEmail = (e: ChangeEvent<HTMLInputElement>) => {
       setInputEmail(e.target.value);
@@ -21,13 +28,15 @@ function LogIn(props: any) {
     const handlePassword = (e: ChangeEvent<HTMLInputElement>) => {
       setInputPassword(e.target.value);
     };
-  
-    const goBack = () => {
-      navigate('/');
-    };
-
 
     const goHome = () => {
+      toast({
+        title: 'Logged in!',
+        description: "Be productive!",
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      })
       navigate('/home');
     };
 
@@ -49,11 +58,16 @@ function LogIn(props: any) {
           })
         
         });
-        const responseJSON = await response.json()
         if (!response.ok) {
-          if(responseJSON.detail == "LOGIN_BAD_CREDENTIALS"){
-            setErrorMsg("Email or password are wrong!")
-          }
+          setLogged("false")
+          toast({
+            title: 'Cannot log in!',
+            description: "Credentials are wrong!",
+            status: 'warning',
+            duration: 2000,
+            isClosable: true,
+          })
+          onClose()
         }else{
           setLogged("true")
           goHome()
@@ -61,10 +75,10 @@ function LogIn(props: any) {
       }catch (error) {
         console.error(error);
       }
-
     };
 
     const handleLogInClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+      setIsOpen(true)
       event.preventDefault();
       logIn();
     };
@@ -77,6 +91,27 @@ function LogIn(props: any) {
 
     return (
       <div className="App">
+        <AlertDialog
+        isOpen={isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onClose}>
+          <AlertDialogOverlay>
+            <AlertDialogContent>
+              <AlertDialogHeader
+              display="flex"
+              alignItems="center"
+              justifyContent="center">
+                Authenticating
+              </AlertDialogHeader>
+              <AlertDialogBody
+              display="flex"
+              alignItems="center"
+              justifyContent="center">
+                <Spinner size='xl' color='green'/>
+              </AlertDialogBody>
+            </AlertDialogContent>
+          </AlertDialogOverlay>
+        </AlertDialog>
         <Modal isOpen={props.isOpen} onClose={props.onClose} closeOnOverlayClick={false} size={'xl'}  isCentered>
           <ModalOverlay />
             <ModalContent m={20} p={3}>

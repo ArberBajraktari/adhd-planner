@@ -14,7 +14,7 @@ import DashboardReports from "./dashboard_reports";
             h='100vh'
             bg='#F6FFDE'
             width={'85%'}
-            float='left'>
+            float='left' >
 
               {props.value === 'today' ? (
               <DashboardToday value={props.value} />

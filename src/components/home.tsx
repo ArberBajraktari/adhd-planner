@@ -7,7 +7,6 @@ import { useState } from 'react';
 function Home() {
 
     const [logged] = useLocalStorage('logged', 'dummy');
-
     const [value, setValue] = useState('');
 
     const handleValueChange = (newValue: React.SetStateAction<string>) => {

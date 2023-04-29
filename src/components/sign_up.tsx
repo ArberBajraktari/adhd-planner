@@ -5,11 +5,11 @@ import { Container, Modal, ModalOverlay, ModalContent,
           ModalHeader, ModalCloseButton, ModalBody, 
           ModalFooter, Text, Flex, Input, InputGroup, Stack, 
           InputRightElement, Button, Card, CardHeader, 
-          CardBody, Heading, StackDivider, Box, useDisclosure } from '@chakra-ui/react'
+          CardBody, Heading, StackDivider, Box, useDisclosure, useToast } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom';
 
 function SignUp(props: any) {
-  const [logged] = useLocalStorage('logged', 'dummy');
+  const [logged, setLogged] = useLocalStorage('logged', 'dummy');
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow((prevShow) => !prevShow);
   const [inputUsername, setInputUsername] = useState("");
@@ -17,6 +17,7 @@ function SignUp(props: any) {
   const [inputPassword, setInputPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
+  const toast = useToast();
 
   const handleEmail = (e: ChangeEvent<HTMLInputElement>) => {
     setInputEmail(e.target.value);
@@ -33,6 +34,31 @@ function SignUp(props: any) {
   const goBack = () => {
     navigate('/');
   };
+
+  const load = (status: string) => {
+    if(status === 'REGISTER_USER_ALREADY_EXISTS'){
+      toast({
+        title: 'User exists already.',
+        description: "This email has an account, try remember password.",
+        status: 'warning',
+        duration: 2000,
+        isClosable: true,
+      })
+    }else{
+      const goHome = () => {
+        toast({
+          title: 'Logged in!',
+          description: "Be productive!",
+          status: 'success',
+          duration: 2000,
+          isClosable: true,
+        })
+        navigate('/home');
+      };
+      setLogged("true")
+      goHome()
+    }
+  }
 
   const handleRegisterUserClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -57,10 +83,10 @@ function SignUp(props: any) {
 
       if (!response.ok) {
         if (responseData.detail === "REGISTER_USER_ALREADY_EXISTS"){
-          setErrorMsg("User already exists!")
+          load('REGISTER_USER_ALREADY_EXISTS')
         }
       } else {
-        setErrorMsg("User registered!")
+        load('USER_REGISTERED')
       }
     } catch (error) {
       console.error(error);
