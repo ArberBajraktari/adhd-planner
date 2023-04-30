@@ -6,6 +6,7 @@ import DashboardToday from './dashboard_today';
 import DashboardBacklog from "./dashboard_backlog";
 import DashboardProjects from "./dashboard_projects";
 import DashboardReports from "./dashboard_reports";
+import DashboardProfile from "./dashboard_profile";
   
   export default function Dashboard(props: any) {
     return (
@@ -22,6 +23,8 @@ import DashboardReports from "./dashboard_reports";
               <DashboardBacklog value={props.value} />
             ) : props.value === 'projects' ? (
               <DashboardProjects value={props.value} />
+            ) : props.value === 'profile' ? (
+              <DashboardProfile value={props.value} />
             ) : (
               <DashboardReports value={props.value} />
             )}

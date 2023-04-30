@@ -17,7 +17,7 @@ export default function Navbar(props: any) {
       <Box h='100vh' w={'15%'} float='left'>
         <Flex color='black' h='90%' justifyContent="flex-start" flexDirection="column">
           <Flex color='black' h='35%' w='100%'>
-            <NavbarTop></NavbarTop>
+            <NavbarTop onTabOpen={openTab}></NavbarTop>
           </Flex>
           <Flex color='black' h='65%' w='100%'>
             <NavbarMenu onTabOpen={openTab}></NavbarMenu>

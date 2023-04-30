@@ -3,7 +3,7 @@ import {
     Card,
     CardBody,
     Flex, Text,
-    Grid, GridItem, Heading, Step, StepDescription, StepIcon, StepIndicator, StepNumber, Stepper, StepSeparator, StepStatus, StepTitle, useSteps, Button
+    Grid, GridItem, Heading, Step, StepDescription, StepIcon, StepIndicator, StepNumber, Stepper, StepSeparator, StepStatus, StepTitle, useSteps, Button, Input
   } from "@chakra-ui/react";
 import NavbarMenu from "./navbar_menu";
 import NavbarTop from "./navbar_top";
@@ -16,6 +16,13 @@ export default function DashboardToday(props: any) {
     { title: 'Four', description: 'Select Rooms' },
     { title: 'Five', description: 'Select Rooms' },
   ]
+
+  const rows = [
+    'This is line 1',
+    'This is line 2',
+    'This is line 3',
+    // Add as many lines as you want...
+  ];
 
   const tasks = [
     { title: 'First', description: 'Contact Info' },
@@ -42,10 +49,9 @@ export default function DashboardToday(props: any) {
         boxShadow='inset 0px 0px 10px rgba(0, 0, 0.5, 0.5)'>
           <Box h='100%' w='100%'>
             <Box h='90%' w='100%' overflowY="scroll">
-              <Button w='100%' mt='2' h='150' bg='#e9e8f1'
-                _hover={{bg: '#d5d4e4'}}>
-                Today
-              </Button>
+                <Button colorScheme='teal' size='md'>
+                  Button
+                </Button>
             </Box>
             <Box h='10%' w='100' >
               <Stepper index={activeStep}>
