@@ -14,7 +14,10 @@ function SignUp(props: any) {
   const handleClick = () => setShow((prevShow) => !prevShow);
   const [inputUsername, setInputUsername] = useState("");
   const [inputEmail, setInputEmail] = useState("");
+  const [inputFirstName, setInputFirstName] = useState("");
+  const [inputLastName, setInputLastName] = useState("");
   const [inputPassword, setInputPassword] = useState("");
+  const [inputBD, setInputBD] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
   const toast = useToast();
@@ -27,12 +30,20 @@ function SignUp(props: any) {
     setInputUsername(e.target.value);
   };
 
+  const handleFirstName = (e: ChangeEvent<HTMLInputElement>) => {
+    setInputFirstName(e.target.value);
+  };
+
+  const handleLastName = (e: ChangeEvent<HTMLInputElement>) => {
+    setInputLastName(e.target.value);
+  };
+
   const handlePassword = (e: ChangeEvent<HTMLInputElement>) => {
     setInputPassword(e.target.value);
   };
 
-  const goBack = () => {
-    navigate('/');
+  const handleBD = (e: ChangeEvent<HTMLInputElement>) => {
+    setInputBD(e.target.value);
   };
 
   const load = (status: string) => {
@@ -61,6 +72,7 @@ function SignUp(props: any) {
   }
 
   const handleRegisterUserClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    console.log("dasdsa")
     event.preventDefault();
     registerUser();
   };
@@ -75,7 +87,12 @@ function SignUp(props: any) {
           password: inputPassword,
           is_active: true,
           is_superuser: false,
-          is_verified: false
+          is_verified: false,
+          username: inputUsername,
+          first_name: inputFirstName,
+          last_name: inputLastName,
+          gender: "male",
+          date_of_birth: inputBD
         })
       });
 
@@ -84,6 +101,8 @@ function SignUp(props: any) {
       if (!response.ok) {
         if (responseData.detail === "REGISTER_USER_ALREADY_EXISTS"){
           load('REGISTER_USER_ALREADY_EXISTS')
+        }else{
+          load('USER_REGISTERED')
         }
       } else {
         load('USER_REGISTERED')
@@ -104,19 +123,50 @@ function SignUp(props: any) {
             <Container>
               <Card size={'lg'} mb='10'>
                 <CardBody>
-                  <Stack divider={<StackDivider />} spacing='4'>
+                  <Stack spacing='4'>
                     <Box>
                       <FormControl isRequired>
                         <FormLabel>Username:</FormLabel>
-                        <Input placeholder="email" 
+                        <Input placeholder="filan_123" 
+                        variant='filled'
                         onChange={handleUsername}
                         value={inputUsername} />
                       </FormControl>
                     </Box>
                     <Box>
                       <FormControl isRequired>
+                        <FormLabel>First Name:</FormLabel>
+                        <Input placeholder="Filan" 
+                        variant='filled'
+                        onChange={handleFirstName}
+                        value={inputFirstName}/>
+                      </FormControl>
+                    </Box>
+                    <Box>
+                      <FormControl isRequired>
+                        <FormLabel>Last Name:</FormLabel>
+                        <Input placeholder="Fisteku" 
+                        variant='filled'
+                        onChange={handleLastName}
+                        value={inputLastName}/>
+                      </FormControl>
+                    </Box>
+                    <Box>
+                      <FormControl isRequired>
+                        <FormLabel>Birthday:</FormLabel>
+                        <Input
+                        placeholder="2000.01.01"
+                        size="md"
+                        type="date"
+                        onChange={handleBD}
+                        value={inputBD}/>
+                      </FormControl>
+                    </Box>
+                    <Box>
+                      <FormControl isRequired>
                         <FormLabel>Email:</FormLabel>
-                        <Input placeholder="email" 
+                        <Input placeholder="filanfisteku@gmail.com" 
+                        variant='filled'
                         onChange={handleEmail}
                         value={inputEmail}/>
                       </FormControl>
@@ -127,6 +177,7 @@ function SignUp(props: any) {
                         <InputGroup size="md">
                           <Input
                             pr="4.5rem"
+                            variant='filled'
                             type={show ? "text" : "password"}
                             placeholder="Enter password"
                             onChange={handlePassword}
@@ -154,7 +205,7 @@ function SignUp(props: any) {
         </ModalContent>
       </Modal>
     </div>
-    );
+  );
 }
 
 export default SignUp;

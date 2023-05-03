@@ -44,6 +44,7 @@ function LogIn(props: any) {
       try {
         const response = await fetch('http://localhost:8009/auth/jwt/login', {
           method: 'POST',
+          credentials: 'include',
           headers: {
             'accept': 'application/json',
             'Content-Type': 'application/x-www-form-urlencoded'
