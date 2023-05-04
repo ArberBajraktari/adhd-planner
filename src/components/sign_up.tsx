@@ -58,15 +58,13 @@ function SignUp(props: any) {
     }else{
       const goHome = () => {
         toast({
-          title: 'Logged in!',
-          description: "Be productive!",
+          title: 'Registered!',
+          description: "You can log in now!",
           status: 'success',
           duration: 2000,
           isClosable: true,
         })
-        navigate('/home');
       };
-      setLogged("true")
       goHome()
     }
   }

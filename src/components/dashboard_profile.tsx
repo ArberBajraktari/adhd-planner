@@ -1,40 +1,63 @@
 import {
   Avatar,
-    Box, Button, Card, CardBody, Container, FormControl, FormLabel, Heading, Input, InputGroup, InputRightElement, Link, Stack, WrapItem
+    Box, Button, ButtonGroup, Card, CardBody, Container, Editable, EditableInput, EditablePreview, Flex, FormControl, FormLabel, Heading, Icon, IconButton, Input, InputGroup, InputRightElement, Link, Stack, useEditableControls, WrapItem
   } from "@chakra-ui/react";
-import { useEffect } from "react";
+import { MouseEventHandler, useEffect, useState } from "react";
+import { EditIcon } from '@chakra-ui/icons'
 
 export default function DashboardProfile(props: any) {
+  const [user, setUser] = useState({ username: '', email: '', gender: '', first_name:'', last_name: '' });
 
-  const getProfile = async () => {
+  const updateUser: MouseEventHandler<SVGElement> = async () => {
     try {
       const response = await fetch('http://localhost:8009/users/me', {
+        method: "PATCH",
         credentials: 'include',
-        headers: {
-          accept: "application/json",
-        },
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(
+          {
+            username: 'arber2',
+            first_name: 'asd',
+            last_name: 'asd'
+          }
+        )
       });
       const responseData = await response.json();
-      if (!response.ok) {
-        console.log("Here:")
-        console.log(response)
-        console.log(responseData)
-      }else{
-        console.log("Here:")
-        console.log(responseData)
-      }
+      console.log(responseData)
     }catch (error) {
       console.error(error);
     }
-  };
+  }
 
   useEffect(() => {
+    const getProfile = async () => {
+      try {
+        const response = await fetch('http://localhost:8009/users/me', {
+          method: "GET",
+          credentials: 'include',
+          headers: {
+            accept: "application/json",
+          },
+        });
+        const responseData = await response.json();
+        if (!response.ok) {
+          console.log(response)
+        }else{
+          setUser({username: responseData.username, 
+                  email: responseData.email,
+                  gender: responseData.gender,
+                  first_name: responseData.first_name,
+                  last_name: responseData.last_name})
+        }
+      }catch (error) {
+        console.error(error);
+      }
+    };
     getProfile()
   }, []);
 
   return (
-    <Box bg='#eeecff' h='100%' boxShadow='inset 0px 0px 10px rgba(0, 0, 0, 0.5)'>
-        <Heading>Profile</Heading>
+    <Box bg='#eeecff' h='100%' boxShadow='inset 0px 0px 10px rgba(0, 0, 0, 0.5)' pt='5'>
         <Container>
           <Card size={'lg'} mb='10'>
             <CardBody>
@@ -50,25 +73,53 @@ export default function DashboardProfile(props: any) {
                 </WrapItem>
                 </Box>
                 <Box>
-                  <FormControl isRequired>
-                    <FormLabel>Username:</FormLabel>
-                    <Input placeholder="filan_123" 
-                    variant='filled'/>
-                  </FormControl>
+                  <FormLabel>Email:</FormLabel>
+                  <Input placeholder={user.email} colorScheme="blue" style={{ opacity: 0.8 }} isDisabled />
                 </Box>
                 <Box>
-                  <FormControl isRequired>
-                    <FormLabel>First Name:</FormLabel>
-                    <Input placeholder="Filan" 
-                    variant='filled'/>
-                  </FormControl>
+                  <FormLabel>Username:</FormLabel>
+                  <InputGroup>
+                    <Input placeholder={user.username} colorScheme="blue" style={{ opacity: 0.8 }} isDisabled />
+                    <InputRightElement>
+                      <EditIcon />
+                    </InputRightElement>
+                  </InputGroup>
                 </Box>
                 <Box>
-                  <FormControl isRequired>
-                    <FormLabel>Last Name:</FormLabel>
-                    <Input placeholder="Fisteku" 
-                    variant='filled'/>
-                  </FormControl>
+                  <FormLabel>First Name:</FormLabel>
+                  <InputGroup>
+                    <Input placeholder={user.first_name} colorScheme="blue" style={{ opacity: 0.8 }} isDisabled />
+                    <InputRightElement>
+                      <EditIcon onClick={updateUser}/>
+                    </InputRightElement>
+                  </InputGroup>
+                </Box>
+                <Box>
+                  <FormLabel>Last Name:</FormLabel>
+                  <InputGroup>
+                    <Input placeholder={user.last_name} colorScheme="blue" style={{ opacity: 0.8 }} isDisabled />
+                    <InputRightElement>
+                      <EditIcon />
+                    </InputRightElement>
+                  </InputGroup>
+                </Box>
+                <Box>
+                  <FormLabel>Password:</FormLabel>
+                  <InputGroup>
+                    <Input placeholder='xXxXxXxXxX' colorScheme="blue" style={{ opacity: 0.8 }} isDisabled />
+                    <InputRightElement>
+                      <EditIcon />
+                    </InputRightElement>
+                  </InputGroup>
+                </Box>
+                <Box>
+                  <FormLabel>Gender:</FormLabel>
+                  <InputGroup>
+                    <Input placeholder={user.gender} colorScheme="blue" style={{ opacity: 0.8 }} isDisabled />
+                    <InputRightElement>
+                      <EditIcon />
+                    </InputRightElement>
+                  </InputGroup>
                 </Box>
                 <Box>
                     <Button colorScheme='teal' variant='outline'>
@@ -81,8 +132,4 @@ export default function DashboardProfile(props: any) {
         </Container>
     </Box>
     );
-}
-
-function toast(arg0: { title: string; description: string; status: string; duration: number; isClosable: boolean; }) {
-  throw new Error("Function not implemented.");
 }
