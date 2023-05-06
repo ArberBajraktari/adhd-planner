@@ -1,32 +1,67 @@
 import {
   Avatar,
-    Box, Button, ButtonGroup, Card, CardBody, Container, Editable, EditableInput, EditablePreview, Flex, FormControl, FormLabel, Heading, Icon, IconButton, Input, InputGroup, InputRightElement, Link, Stack, useEditableControls, WrapItem
+    Box, Button, ButtonGroup, Card, CardBody, Container, Editable, EditableInput, EditablePreview, Flex, FormControl, FormLabel, Heading, Icon, IconButton, Input, InputGroup, InputRightElement, Link, Stack, useDisclosure, useEditableControls, WrapItem
   } from "@chakra-ui/react";
 import { MouseEventHandler, useEffect, useState } from "react";
 import { EditIcon } from '@chakra-ui/icons'
+import UpdateUsername from "./update/update_username";
+import UpdateFirstName from "./update/update_first_name";
+import UpdateLastName from "./update/update_last_name";
+import UpdateGender from "./update/update_gender";
 
 export default function DashboardProfile(props: any) {
   const [user, setUser] = useState({ username: '', email: '', gender: '', first_name:'', last_name: '' });
 
-  const updateUser: MouseEventHandler<SVGElement> = async () => {
-    try {
-      const response = await fetch('http://localhost:8009/users/me', {
-        method: "PATCH",
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(
-          {
-            username: 'arber2',
-            first_name: 'asd',
-            last_name: 'asd'
-          }
-        )
-      });
-      const responseData = await response.json();
-      console.log(responseData)
-    }catch (error) {
-      console.error(error);
-    }
+  const { 
+    isOpen: isUsername,
+    onOpen: onUsername, 
+    onClose: closeUsername 
+  } = useDisclosure()
+
+  const { 
+    isOpen: isFirstName,
+    onOpen: onFirstName, 
+    onClose: closeFirstName 
+  } = useDisclosure()
+
+  const { 
+    isOpen: isLastName,
+    onOpen: onLastName, 
+    onClose: closeLastName 
+  } = useDisclosure()
+
+  const { 
+    isOpen: isGender,
+    onOpen: onGender, 
+    onClose: closeGender 
+  } = useDisclosure()
+
+  const updateUsername = (username: string) => {
+    setUser({
+      ...user,
+      username: username
+    });
+  }
+
+  const updateFirstName = (firstname: string) => {
+    setUser({
+      ...user,
+      first_name: firstname
+    });
+  }
+
+  const updateLastName = (lastname: string) => {
+    setUser({
+      ...user,
+      last_name: lastname
+    });
+  }
+
+  const updateGender = (value: string) => {
+    setUser({
+      ...user,
+      gender: value
+    });
   }
 
   useEffect(() => {
@@ -58,6 +93,10 @@ export default function DashboardProfile(props: any) {
 
   return (
     <Box bg='#eeecff' h='100%' boxShadow='inset 0px 0px 10px rgba(0, 0, 0, 0.5)' pt='5'>
+      <UpdateUsername isOpen={isUsername} onClose={closeUsername} updateUsername={updateUsername}></UpdateUsername>
+      <UpdateFirstName isOpen={isFirstName} onClose={closeFirstName} updateFirstName={updateFirstName}></UpdateFirstName>
+      <UpdateLastName isOpen={isLastName} onClose={closeLastName} updateLastName={updateLastName}></UpdateLastName>
+      <UpdateGender isOpen={isGender} onClose={closeGender} updateGender={updateGender}></UpdateGender>
         <Container>
           <Card size={'lg'} mb='10'>
             <CardBody>
@@ -81,7 +120,7 @@ export default function DashboardProfile(props: any) {
                   <InputGroup>
                     <Input placeholder={user.username} colorScheme="blue" style={{ opacity: 0.8 }} isDisabled />
                     <InputRightElement>
-                      <EditIcon />
+                      <EditIcon onClick={onUsername}/>
                     </InputRightElement>
                   </InputGroup>
                 </Box>
@@ -90,7 +129,7 @@ export default function DashboardProfile(props: any) {
                   <InputGroup>
                     <Input placeholder={user.first_name} colorScheme="blue" style={{ opacity: 0.8 }} isDisabled />
                     <InputRightElement>
-                      <EditIcon onClick={updateUser}/>
+                      <EditIcon onClick={onFirstName}/>
                     </InputRightElement>
                   </InputGroup>
                 </Box>
@@ -99,7 +138,7 @@ export default function DashboardProfile(props: any) {
                   <InputGroup>
                     <Input placeholder={user.last_name} colorScheme="blue" style={{ opacity: 0.8 }} isDisabled />
                     <InputRightElement>
-                      <EditIcon />
+                      <EditIcon onClick={onLastName}/>
                     </InputRightElement>
                   </InputGroup>
                 </Box>
@@ -117,7 +156,7 @@ export default function DashboardProfile(props: any) {
                   <InputGroup>
                     <Input placeholder={user.gender} colorScheme="blue" style={{ opacity: 0.8 }} isDisabled />
                     <InputRightElement>
-                      <EditIcon />
+                      <EditIcon onClick={onGender}/>
                     </InputRightElement>
                   </InputGroup>
                 </Box>
