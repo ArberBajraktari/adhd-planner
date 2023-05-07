@@ -36,6 +36,7 @@ export default function DashboardToday(props: any) {
         });
         const data = await response.json();
         setTasks(data);
+        console.log('what')
         console.log(data);
       } catch (error) {
         console.error('Request error:', error);
@@ -63,7 +64,7 @@ export default function DashboardToday(props: any) {
       if (!response.ok) {
         load('TASK_NOT_CREATED')
       } else {
-        const newTask = { name: 'New Task', description: 'New Task Description' , id: responseData.id};
+        const newTask = { name: 'New Task', description: 'New Task Description', id: responseData.id };
         setTasks([...theTasks, newTask]);
         load('TASK_CREATED')
       }
