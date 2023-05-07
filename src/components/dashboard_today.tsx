@@ -1,14 +1,77 @@
 import {
-  Box,
-    Card,
-    CardBody,
-    Flex, Text,
-    Grid, GridItem, Heading, Step, StepDescription, StepIcon, StepIndicator, StepNumber, Stepper, StepSeparator, StepStatus, StepTitle, useSteps, Button, Input
+    Box, useToast,
+    Grid, GridItem, Heading, Step, StepDescription, StepIcon, StepIndicator, StepNumber, Stepper, StepSeparator, StepStatus, StepTitle, useSteps, Button, Input, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Card, CardBody, Code, Flex
   } from "@chakra-ui/react";
-import NavbarMenu from "./navbar_menu";
-import NavbarTop from "./navbar_top";
+import { useEffect, useState } from "react";
 
 export default function DashboardToday(props: any) {
+  const toast = useToast();
+  const [theTasks, setTasks] = useState<any[]>([])
+
+  const load = (status: string) => {
+    if(status === 'TASK_NOT_CREATED'){
+      toast({
+        title: 'Task not created.',
+        description: "Something went wrong",
+        status: 'warning',
+        duration: 2000,
+        isClosable: true,
+      })
+    }else{
+      toast({
+        title: 'Task created!',
+        description: "Be productive",
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      })
+    }
+  }
+
+  useEffect(() => {
+    const getTasks = async () => {
+      try {
+        const response = await fetch('http://localhost:8009/tasks', {
+          credentials: 'include',
+        });
+        const data = await response.json();
+        setTasks(data);
+        console.log(data);
+      } catch (error) {
+        console.error('Request error:', error);
+      }
+    }
+    getTasks()
+        
+  }, []);
+
+  const addTask = async () => {
+    try {
+      const response = await fetch('http://localhost:8009/tasks', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: 'string',
+          description: 'string'
+        })
+      });
+      const responseData = await response.json();
+      if (!response.ok) {
+        load('TASK_NOT_CREATED')
+      } else {
+        const newTask = { name: 'New Task', description: 'New Task Description' , id: responseData.id};
+        setTasks([...theTasks, newTask]);
+        load('TASK_CREATED')
+      }
+    }catch (error) {
+      console.error(error);
+    }
+  }
+
   const steps = [
     { title: 'First', description: 'Contact Info' },
     { title: 'Second', description: 'Date & Time' },
@@ -16,13 +79,6 @@ export default function DashboardToday(props: any) {
     { title: 'Four', description: 'Select Rooms' },
     { title: 'Five', description: 'Select Rooms' },
   ]
-
-  const rows = [
-    'This is line 1',
-    'This is line 2',
-    'This is line 3',
-    // Add as many lines as you want...
-  ];
 
   const tasks = [
     { title: 'First', description: 'Contact Info' },
@@ -49,9 +105,28 @@ export default function DashboardToday(props: any) {
         boxShadow='inset 0px 0px 10px rgba(0, 0, 0.5, 0.5)'>
           <Box h='100%' w='100%'>
             <Box h='90%' w='100%' overflowY="scroll">
-                <Button colorScheme='teal' size='md'>
+                <Button colorScheme='teal' size='md' onClick={addTask}>
                   Button
                 </Button>
+                {theTasks.length > 0 && (
+                  theTasks.map((task: any) => (
+                    <div key={task.id}>
+                      <Card mb='3'>
+                        <CardBody>
+                          <Box width='100vh'>
+                            <Flex direction="column">
+                              <Box mb={2}>{task.name}</Box>
+                              <Box width="100%">
+                                <Code colorScheme='red' children="var chakra = 'awesome!'" />
+                              </Box>
+                            </Flex>
+                          </Box>
+                        </CardBody>
+                      </Card>
+                    </div>
+                  ))
+                )}
+
             </Box>
             <Box h='10%' w='100' >
               <Stepper index={activeStep}>

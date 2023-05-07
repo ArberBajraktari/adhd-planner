@@ -1,17 +1,7 @@
 import {
-    Alert, Box,
-    ButtonGroup, Container, Modal, ModalOverlay, ModalContent, 
-    ModalHeader, ModalCloseButton, ModalBody, 
-    ModalFooter, Text, Flex, Input, InputGroup, Stack, 
-    InputRightElement, Card, CardHeader, 
-    CardBody, Heading, StackDivider, useDisclosure,
+    Box,
+    ButtonGroup, useDisclosure,
     Button,
-    AlertDialog,
-    AlertDialogOverlay,
-    AlertDialogContent,
-    AlertDialogHeader,
-    AlertDialogBody,
-    CircularProgress,
   } from "@chakra-ui/react";
   import React, { ChangeEvent } from 'react';
   import { useState, useEffect, useRef } from "react";
@@ -32,15 +22,33 @@ import {
     const [isLoading, setIsLoading] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const onClose = () => setIsOpen(false);
-  
-    const logOut = () => {
-      setLogged("false")
+
+    const logOut = async () => {
+      try {
+        const response = await fetch('http://localhost:8009/auth/jwt/logout', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Accept': 'application/json',
+          },
+        });
+        console.log(response)
+        if (!response.ok) {
+          console.log("could not log out")
+          setLogged("false")
+        }else{
+          console.log("logged out")
+          setLogged("false")
+          navigate('/');
+        }
+      }catch (error) {
+        console.error(error);
+      }
     };
   
     const handleLogOutClick = (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault()
       logOut()
-      navigate('/');
     };
 
     const { 

@@ -60,7 +60,6 @@ function LogIn(props: any) {
         
         });
         if (!response.ok) {
-          setLogged("false")
           toast({
             title: 'Cannot log in!',
             description: "Credentials are wrong!",
@@ -69,6 +68,7 @@ function LogIn(props: any) {
             isClosable: true,
           })
           onClose()
+          setLogged("false")
         }else{
           setLogged("true")
           goHome()
