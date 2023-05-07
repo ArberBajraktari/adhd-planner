@@ -3,7 +3,7 @@ import {
     Box, Button, ButtonGroup, Card, CardBody, Container, Editable, EditableInput, EditablePreview, Flex, FormControl, FormLabel, Heading, Icon, IconButton, Input, InputGroup, InputRightElement, Link, Stack, useDisclosure, useEditableControls, WrapItem
   } from "@chakra-ui/react";
 import { MouseEventHandler, useEffect, useState } from "react";
-import { EditIcon } from '@chakra-ui/icons'
+import { EditIcon, SearchIcon } from '@chakra-ui/icons'
 import UpdateUsername from "./update/update_username";
 import UpdateFirstName from "./update/update_first_name";
 import UpdateLastName from "./update/update_last_name";
@@ -113,57 +113,70 @@ export default function DashboardProfile(props: any) {
                 </Box>
                 <Box>
                   <FormLabel>Email:</FormLabel>
-                  <Input placeholder={user.email} colorScheme="blue" style={{ opacity: 0.8 }} isDisabled />
+                  <Input placeholder={user.email} colorScheme="blue" css={{
+                    cursor: 'not-allowed',
+                    pointerEvents: 'none',
+                  }}  />
                 </Box>
                 <Box>
                   <FormLabel>Username:</FormLabel>
                   <InputGroup>
-                    <Input placeholder={user.username} colorScheme="blue" style={{ opacity: 0.8 }} isDisabled />
+                    <Input placeholder={user.username} colorScheme="blue" style={{ opacity: 0.8 }} css={{
+                    cursor: 'not-allowed',
+                    pointerEvents: 'none',
+                  }}/>
                     <InputRightElement>
-                      <EditIcon onClick={onUsername}/>
+                      <IconButton aria-label='Search database' onClick={onUsername} icon={<EditIcon />} ml='3'/>
                     </InputRightElement>
                   </InputGroup>
                 </Box>
                 <Box>
                   <FormLabel>First Name:</FormLabel>
                   <InputGroup>
-                    <Input placeholder={user.first_name} colorScheme="blue" style={{ opacity: 0.8 }} isDisabled />
+                    <Input placeholder={user.first_name} colorScheme="blue" style={{ opacity: 0.8 }} css={{
+                    cursor: 'not-allowed',
+                    pointerEvents: 'none',
+                  }}  />
                     <InputRightElement>
-                      <EditIcon onClick={onFirstName}/>
+                     <IconButton aria-label='Search database' onClick={onFirstName} icon={<EditIcon />} ml='3'/>
                     </InputRightElement>
                   </InputGroup>
                 </Box>
                 <Box>
                   <FormLabel>Last Name:</FormLabel>
                   <InputGroup>
-                    <Input placeholder={user.last_name} colorScheme="blue" style={{ opacity: 0.8 }} isDisabled />
+                    <Input placeholder={user.last_name} colorScheme="blue" style={{ opacity: 0.8 }} css={{
+                    cursor: 'not-allowed',
+                    pointerEvents: 'none',
+                  }}  />
                     <InputRightElement>
-                      <EditIcon onClick={onLastName}/>
+                     <IconButton aria-label='Search database' onClick={onLastName} icon={<EditIcon />} ml='3'/>
                     </InputRightElement>
                   </InputGroup>
                 </Box>
                 <Box>
                   <FormLabel>Password:</FormLabel>
                   <InputGroup>
-                    <Input placeholder='xXxXxXxXxX' colorScheme="blue" style={{ opacity: 0.8 }} isDisabled />
+                    <Input placeholder='xXxXxXxXxX' colorScheme="blue" style={{ opacity: 0.8 }} css={{
+                    cursor: 'not-allowed',
+                    pointerEvents: 'none',
+                  }}  />
                     <InputRightElement>
-                      <EditIcon />
+                      <IconButton aria-label='Search database' icon={<EditIcon />} ml='3'/>
                     </InputRightElement>
                   </InputGroup>
                 </Box>
                 <Box>
                   <FormLabel>Gender:</FormLabel>
                   <InputGroup>
-                    <Input placeholder={user.gender} colorScheme="blue" style={{ opacity: 0.8 }} isDisabled />
+                    <Input placeholder={user.gender} colorScheme="blue" style={{ opacity: 0.8 }} css={{
+                    cursor: 'not-allowed',
+                    pointerEvents: 'none',
+                  }}  />
                     <InputRightElement>
-                      <EditIcon onClick={onGender}/>
+                      <IconButton aria-label='Search database' onClick={onGender} icon={<EditIcon />} ml='3'/>
                     </InputRightElement>
                   </InputGroup>
-                </Box>
-                <Box>
-                    <Button colorScheme='teal' variant='outline'>
-                      Sign up
-                    </Button>
                 </Box>
               </Stack>
             </CardBody>
