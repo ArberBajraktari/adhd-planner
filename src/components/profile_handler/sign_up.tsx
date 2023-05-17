@@ -7,8 +7,8 @@ import { Container, Modal, ModalOverlay, ModalContent,
           InputRightElement, Button, Card, CardHeader, 
           CardBody, Heading, StackDivider, Box, useDisclosure, useToast, FormControl, FormLabel, FormErrorMessage, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverTrigger, VisuallyHidden, Tooltip } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom';
-import config from '../conf/config';
-import TooltipInfo from './tooltip_info';
+import config from '../../conf/config';
+import TooltipInfo from '../tooltip_info';
 
 function SignUp(props: any) {
   const [show, setShow] = React.useState(false);

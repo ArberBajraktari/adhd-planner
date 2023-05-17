@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLocalStorage } from 'react-use';
-import Dashboard from './dashboard';
-import Navbar from './sidebar';
+import Dashboard from './dashboard/dashboard';
+import Navbar from './navbar/sidebar';
 import { useState } from 'react';
 
 function Home() {

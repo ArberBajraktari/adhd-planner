@@ -4,10 +4,10 @@ import {
   } from "@chakra-ui/react";
 import { MouseEventHandler, useEffect, useState } from "react";
 import { EditIcon, SearchIcon } from '@chakra-ui/icons'
-import UpdateUsername from "./update/update_username";
-import UpdateFirstName from "./update/update_first_name";
-import UpdateLastName from "./update/update_last_name";
-import UpdateGender from "./update/update_gender";
+import UpdateUsername from "../profile_handler/update_username";
+import UpdateFirstName from "../profile_handler/update_first_name";
+import UpdateLastName from "../profile_handler/update_last_name";
+import UpdateGender from "../profile_handler/update_gender";
 
 export default function DashboardProfile(props: any) {
   const [user, setUser] = useState({ username: '', email: '', gender: '', first_name:'', last_name: '' });
