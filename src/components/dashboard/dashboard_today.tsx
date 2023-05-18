@@ -1,9 +1,10 @@
 import {
     Box, useToast,
-    Grid, GridItem, Heading, Step, StepDescription, StepIcon, StepIndicator, StepNumber, Stepper, StepSeparator, StepStatus, StepTitle, useSteps, Button, Input, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Card, CardBody, Code, Flex
+    Grid, GridItem, Heading, Step, StepDescription, StepIcon, StepIndicator, StepNumber, Stepper, StepSeparator, StepStatus, StepTitle, useSteps, Button, Input, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Card, CardBody, Code, Flex, IconButton
   } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { Checkbox, CheckboxGroup } from '@chakra-ui/react'
+import { DeleteIcon } from "@chakra-ui/icons";
 
 interface TaskItem {
   id: number;
@@ -25,7 +26,6 @@ export default function DashboardToday(props: any) {
   const [theTasks, setTasks] = useState<Task[]>([]);
   const [userId, setUserId] = useState('');
   const [trigger, setTrigger] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
 
   const load = (status: string) => {
     if(status === 'TASK_NOT_CREATED'){
@@ -83,7 +83,29 @@ export default function DashboardToday(props: any) {
     }
   }
   
-  
+  const deleteTask = async (taskId: number) => {
+    try {
+      const response = await fetch(`http://localhost:8009/tasks/${taskId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+      if (response.ok) {
+        const updatedTasks = theTasks.filter(theTasks => theTasks.id !== taskId);
+        setTasks(updatedTasks);
+        console.log('Task deleted successfully');
+        // Perform any additional actions after successful deletion
+      } else {
+        console.error('Error deleting task:', response.status);
+        // Handle the error case
+      }
+    } catch (error) {
+      console.error('Request error:', error);
+      // Handle any network or other errors
+    }
+  };
   
 
   useEffect(() => {
@@ -239,13 +261,30 @@ export default function DashboardToday(props: any) {
                               <Box width="100%">
                                 <Code colorScheme='red' children="var chakra = 'awesome!'" />
                               </Box>
-                              {task.task_items.slice().reverse().map((item: any) => (
-                                <Checkbox key={item.id} isChecked={item.done} onChange={() => handleCheckbox(task.id, item.id, item.done)}>{item.name} </Checkbox>
-                              ))}
+                              {task.task_items
+                                .sort((a: any, b: any) => a.id - b.id) // Sort the task_items based on item.id
+                                .map((item: any) => (
+                                  <Checkbox
+                                    key={item.id}
+                                    isChecked={item.done}
+                                    onChange={() => handleCheckbox(task.id, item.id, item.done)}
+                                  >
+                                    {item.name}
+                                  </Checkbox>
+                                ))}
+
                             </Flex>
                             <Button colorScheme='teal' size='md' onClick={() => addTaskItem(task.id)}>
                               Add item
                             </Button>
+                            <Flex justify="flex-end" mt={4}>
+                            <IconButton
+                              colorScheme="red"
+                              aria-label="Delete"
+                              icon={<DeleteIcon />}
+                              onClick={() => deleteTask(task.id)}
+                            />
+                            </Flex>
                           </Box>
                         </CardBody>
                       </Card>
