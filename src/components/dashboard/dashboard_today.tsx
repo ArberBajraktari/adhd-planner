@@ -3,11 +3,29 @@ import {
     Grid, GridItem, Heading, Step, StepDescription, StepIcon, StepIndicator, StepNumber, Stepper, StepSeparator, StepStatus, StepTitle, useSteps, Button, Input, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Card, CardBody, Code, Flex
   } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { Checkbox, CheckboxGroup } from '@chakra-ui/react'
+
+interface TaskItem {
+  id: number;
+  task_id: number;
+  name: string;
+  done: boolean;
+}
+
+interface Task {
+  id: number;
+  user_id: string;
+  name: string;
+  description: string;
+  task_items: TaskItem[];
+}
 
 export default function DashboardToday(props: any) {
   const toast = useToast();
-  const [theTasks, setTasks] = useState<any[]>([])
+  const [theTasks, setTasks] = useState<Task[]>([]);
   const [userId, setUserId] = useState('');
+  const [trigger, setTrigger] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
 
   const load = (status: string) => {
     if(status === 'TASK_NOT_CREATED'){
@@ -29,10 +47,49 @@ export default function DashboardToday(props: any) {
     }
   }
 
+  const handleCheckbox = async (task_id: any, item_id: any, status: boolean) => {
+    try {
+      const response = await fetch(`http://localhost:8009/tasks_item/${item_id}`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ "done": !status })
+      });
+  
+      if (response.ok) {
+        console.log('Task updated successfully');
+        const updatedTasks = [...theTasks];
+
+        const taskItemToUpdate = updatedTasks
+          .flatMap(task => task.task_items) 
+          .find(item => item.id === item_id);
+
+          console.log(taskItemToUpdate)
+
+        if (taskItemToUpdate) {
+          taskItemToUpdate.done = !taskItemToUpdate.done;
+        }
+
+        setTasks(updatedTasks);
+
+      } else {
+        console.error('Error updating task:', response.status);
+      }
+    } catch (error) {
+      console.error('Request error:', error);
+    }
+  }
+  
+  
+  
+
   useEffect(() => {
     const getTasks = async () => {
       try {
-        const response = await fetch('http://localhost:8009/tasks', {
+        const response = await fetch('http://localhost:8009/tasks_full', {
           credentials: 'include',
         });
         const data = await response.json();
@@ -65,8 +122,9 @@ export default function DashboardToday(props: any) {
     };
     getProfile()
     getTasks()
+    setTrigger(false);
         
-  }, []);
+  }, [trigger]);
 
   const addTask = async () => {
     try {
@@ -87,12 +145,50 @@ export default function DashboardToday(props: any) {
       if (!response.ok) {
         load('TASK_NOT_CREATED')
       } else {
-        const newTask = { name: 'New Task', description: 'New Task Description', id: responseData.id };
-        setTasks([...theTasks, newTask]);
+        console.log(responseData)
+        //setTasks([...theTasks, newTask]);
+        const newTask: Task = {
+          id: responseData.id,
+          user_id: responseData.user_id,
+          name: responseData.name,
+          description: responseData.description,
+          task_items: []
+        };
+      
+        setTasks(prevTasks => [...prevTasks, newTask]);
         load('TASK_CREATED')
       }
     }catch (error) {
       console.error(error);
+    }
+  }
+
+  const addTaskItem = async (task_id: any) => {
+    try {
+      const response = await fetch('http://localhost:8009/tasks_item', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: 'item 3',
+          task_id: task_id,
+          done: false
+        })
+      });
+  
+      if (response.ok) {
+        // Item added successfully
+        console.log('Item added successfully');
+        setTrigger(true);
+      } else {
+        // Item addition failed
+        console.error('Failed to add item');
+      }
+    } catch (error) {
+      console.error('Request error:', error);
     }
   }
 
@@ -143,7 +239,13 @@ export default function DashboardToday(props: any) {
                               <Box width="100%">
                                 <Code colorScheme='red' children="var chakra = 'awesome!'" />
                               </Box>
+                              {task.task_items.slice().reverse().map((item: any) => (
+                                <Checkbox key={item.id} isChecked={item.done} onChange={() => handleCheckbox(task.id, item.id, item.done)}>{item.name} </Checkbox>
+                              ))}
                             </Flex>
+                            <Button colorScheme='teal' size='md' onClick={() => addTaskItem(task.id)}>
+                              Add item
+                            </Button>
                           </Box>
                         </CardBody>
                       </Card>
