@@ -1,8 +1,8 @@
 import {
     Box, useToast,
-    Grid, GridItem, Heading, Step, StepDescription, StepIcon, StepIndicator, StepNumber, Stepper, StepSeparator, StepStatus, StepTitle, useSteps, Button, Input, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Card, CardBody, Code, Flex, IconButton
+    Grid, GridItem, Heading, Step, StepDescription, StepIcon, StepIndicator, StepNumber, Stepper, StepSeparator, StepStatus, StepTitle, useSteps, Button, Input, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Card, CardBody, Code, Flex, IconButton, InputGroup, InputLeftElement, InputRightElement
   } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Checkbox, CheckboxGroup } from '@chakra-ui/react'
 import { DeleteIcon } from "@chakra-ui/icons";
 
@@ -106,6 +106,32 @@ export default function DashboardToday(props: any) {
       // Handle any network or other errors
     }
   };
+
+  const deleteTaskItem = async (itemId: any) => {
+    try {
+      const response = await fetch(`http://localhost:8009/tasks_item?item_id=${itemId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+      if (response.ok) {
+        const updatedTasks = [...theTasks];
+        const filteredTasks = updatedTasks.map(task => {
+        const filteredTaskItems = task.task_items.filter(item => item.id !== itemId);
+        return { ...task, task_items: filteredTaskItems };
+      });
+        
+        setTasks(filteredTasks);
+      } else {
+        console.error('Error deleting task item:', response.status);
+      }
+    } catch (error) {
+      console.error('Request error:', error);
+    }
+  };
+  
   
 
   useEffect(() => {
@@ -233,6 +259,48 @@ export default function DashboardToday(props: any) {
     count: steps.length,
   })
 
+  const changeItem = async (value: string, item_id: number) => {
+    try {
+      const response = await fetch(`http://localhost:8009/tasks_item/${item_id}`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ "name": value })
+      });
+      if (response.ok) {
+        const updatedTasks = [...theTasks];
+  
+        const taskItemToUpdate = updatedTasks
+          .flatMap(task => task.task_items) 
+          .find(item => item.id === item_id);
+  
+        if (taskItemToUpdate) {
+          taskItemToUpdate.name = value;
+        }
+  
+        setTasks(updatedTasks);
+      } else {
+        console.error('Error updating task:', response.status);
+      }
+    } catch (error) {
+      console.error('Request error:', error);
+    }
+  };
+  
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>, item_id: number) => {
+    const value = event.target.value;
+    changeItem(value, item_id);
+  };
+  
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>, task_id: number) => {
+    if (event.key === 'Enter') {
+      addTaskItem(task_id)
+    }
+  };
+
   return (
     <Grid
       templateAreas={`"dashboard parking"`}
@@ -259,18 +327,36 @@ export default function DashboardToday(props: any) {
                             <Flex direction="column">
                               <Box mb={2}>{task.name}</Box>
                               <Box width="100%">
-                                <Code colorScheme='red' children="var chakra = 'awesome!'" />
+                                <Code colorScheme='red' children="var chakra = 'awesome!'" m='4' />
                               </Box>
                               {task.task_items
                                 .sort((a: any, b: any) => a.id - b.id) // Sort the task_items based on item.id
                                 .map((item: any) => (
-                                  <Checkbox
-                                    key={item.id}
-                                    isChecked={item.done}
-                                    onChange={() => handleCheckbox(task.id, item.id, item.done)}
-                                  >
-                                    {item.name}
+                                  <InputGroup>
+                                  <InputLeftElement>
+                                    <Checkbox
+                                      key={item.id}
+                                      isChecked={item.done}
+                                      onChange={() => handleCheckbox(task.id, item.id, item.done)}
+                                    >
                                   </Checkbox>
+                                  </InputLeftElement>
+                                  <Input
+                                    id={item.id}
+                                    key={item.id}
+                                    value={item.name}
+                                    onChange={(event) => handleInputChange(event, item.id)}
+                                    onKeyDown={(event) => handleKeyDown(event, task.id)}
+                                  />  
+                                  <InputRightElement>
+                                    <IconButton
+                                      colorScheme="gray"
+                                      aria-label="Delete"
+                                      icon={<DeleteIcon />}
+                                      onClick={() => deleteTaskItem(item.id)}
+                                    />
+                                  </InputRightElement>
+                                </InputGroup>
                                 ))}
 
                             </Flex>
