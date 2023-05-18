@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 export default function DashboardToday(props: any) {
   const toast = useToast();
   const [theTasks, setTasks] = useState<any[]>([])
+  const [userId, setUserId] = useState('');
 
   const load = (status: string) => {
     if(status === 'TASK_NOT_CREATED'){
@@ -42,6 +43,27 @@ export default function DashboardToday(props: any) {
         console.error('Request error:', error);
       }
     }
+    const getProfile = async () => {
+      try {
+        const response = await fetch('http://localhost:8009/users/me', {
+          method: "GET",
+          credentials: 'include',
+          headers: {
+            accept: "application/json",
+          },
+        });
+        const responseData = await response.json();
+        if (!response.ok) {
+          console.log(response)
+        }else{
+          setUserId(responseData.id)
+          console.log(userId)
+        }
+      }catch (error) {
+        console.error(error);
+      }
+    };
+    getProfile()
     getTasks()
         
   }, []);
@@ -57,7 +79,8 @@ export default function DashboardToday(props: any) {
         },
         body: JSON.stringify({
           name: 'string',
-          description: 'string'
+          description: 'string',
+          user_id: userId
         })
       });
       const responseData = await response.json();

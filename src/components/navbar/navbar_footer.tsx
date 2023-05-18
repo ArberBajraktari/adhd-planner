@@ -7,8 +7,8 @@ import {
   import { useState, useEffect, useRef } from "react";
   import { useNavigate } from 'react-router-dom';
   import { useLocalStorage } from 'react-use';
-  import LogIn from "../profile_handler/log_in";
-  import SignUp from "../profile_handler/sign_up";
+  import LogIn from "../update/log_in";
+  import SignUp from "../update/sign_up";
   
   
   export default function NavbarFooter(props: { logged: any;}) {

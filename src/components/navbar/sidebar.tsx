@@ -3,8 +3,8 @@ import {
   Box
 } from "@chakra-ui/react";
 import NavbarFooter from "./navbar_footer";
-import NavbarTop from "./navbar_top";
-import NavbarMenu from "./navbar_menu";
+import NavbarTop from "../navbar_top";
+import NavbarMenu from "../navbar_menu";
 
 
 export default function Navbar(props: any) {
