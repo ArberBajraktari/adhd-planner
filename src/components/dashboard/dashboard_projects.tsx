@@ -1,8 +1,8 @@
 import { DeleteIcon } from "@chakra-ui/icons";
 import {
-    Box, Button, Card, CardBody, Flex, Heading, IconButton
+    Box, Button, Card, CardBody, Flex, Heading, IconButton, Input
   } from "@chakra-ui/react";
-import { useEffect } from "react";
+import { useEffect, ChangeEvent } from "react";
 import { useState } from "react";
 
 interface Projects {
@@ -117,6 +117,39 @@ export default function DashboardProjects(props: any) {
 
   }, []);
 
+  const handleInputChange = async(event: ChangeEvent<HTMLInputElement>, project_id: number) => {
+    const value = event.target.value;
+    const updatedTasks = [...projects];
+    const taskItemToUpdate = updatedTasks
+      .find(project => project.id === project_id);
+    if (taskItemToUpdate) {
+      taskItemToUpdate.name = value;
+    }
+    setProjects(updatedTasks);
+
+    try {
+      const response = await fetch(`http://localhost:8009/projects?project_id=${project_id}`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: value
+        }),
+      });
+
+      if (response.ok) {
+        console.log('Project updated successfully');
+      } else {
+        console.error('Error updating project:', response.status);
+      }
+    } catch (error) {
+      console.error('Request error:', error);
+    }
+  };
+
   return (
     <Box bg='#eeecff' h='100%' boxShadow='inset 0px 0px 10px rgba(0, 0, 0, 0.5)'>
         <Heading>Projects</Heading>
@@ -127,7 +160,14 @@ export default function DashboardProjects(props: any) {
           <Card m='5'>
           <CardBody>
             <Box width='100vh'>
-                {project_item.name}
+              <Input
+                id={project_item.id}
+                key={project_item.id}
+                value={project_item.name}
+                onChange={(event) => handleInputChange(event, project_item.id)}
+                // onChange={(event) => handleInputChange(event, item.id)}
+                // onKeyDown={(event) => handleKeyDown(event, task.id)}
+              />    
                 <Flex justify="flex-end" mt={4}>
                   <IconButton
                     colorScheme="red"
