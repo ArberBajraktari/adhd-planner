@@ -21,11 +21,19 @@ interface Task {
   task_items: TaskItem[];
 }
 
+interface ParkingTicket {
+  id: number;
+  name: string;
+  top: number;
+  left: number;
+}
+
 export default function DashboardToday(props: any) {
   const toast = useToast();
   const [theTasks, setTasks] = useState<Task[]>([]);
   const [userId, setUserId] = useState('');
   const [trigger, setTrigger] = useState(false);
+  const [divs, setDivs] = useState<ParkingTicket[]>([]);
 
   const load = (status: string) => {
     if(status === 'TASK_NOT_CREATED'){
@@ -240,6 +248,17 @@ export default function DashboardToday(props: any) {
     }
   }
 
+  const handleParkingLot = async (event: React.MouseEvent<HTMLDivElement>) => {
+    const { clientX, clientY } = event.nativeEvent;
+    console.log("Clicked position:", clientX, clientY);
+    parkinTicket(clientX, clientY)
+  }
+
+  const handleParkingLotDesign = async (event: React.MouseEvent<HTMLDivElement>) => {
+    console.log("Clicked position:");
+  }
+  
+
   const steps = [
     { title: 'First', description: 'Contact Info' },
     { title: 'Second', description: 'Date & Time' },
@@ -300,6 +319,28 @@ export default function DashboardToday(props: any) {
       addTaskItem(task_id)
     }
   };
+
+  const parkinTicket = (x: any, y: any) => {
+    const boxStyle: React.CSSProperties = {
+      position: 'absolute',
+      top: y,
+      left: x,
+      width: '100px',
+      height: '100px',
+      backgroundColor: 'red',
+    };
+  
+    const parkingTicket: ParkingTicket = {
+      id: 1,
+      name: "Example Parking Ticket",
+      top: y,
+      left: x
+    };
+    const tempDivs = [...divs, parkingTicket];
+    setDivs(tempDivs);
+  };
+  
+  
 
   return (
     <Grid
@@ -406,8 +447,17 @@ export default function DashboardToday(props: any) {
       <GridItem
         area={'parking'}
         bg='#f7f7f7'
+        cursor="pointer"
+        _hover={{ cursor: "crosshair"}}
+        onClick={(event) => handleParkingLot(event)}
       >
         <Heading>Parking Lot</Heading>
+        {divs.map((div) => (
+          <div key={div.id} style={{ position: 'absolute', top: div.top, left: div.left, width:'130px', height:'130px', background:'white'}}>
+            <p>{div.name}</p>
+          </div>
+        ))}
+
       </GridItem>
     </Grid>
 
