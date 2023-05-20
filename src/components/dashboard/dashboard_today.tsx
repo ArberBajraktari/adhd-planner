@@ -1,10 +1,11 @@
 import {
     Box, useToast,
-    Grid, GridItem, Heading, Step, StepDescription, StepIcon, StepIndicator, StepNumber, Stepper, StepSeparator, StepStatus, StepTitle, useSteps, Button, Input, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Card, CardBody, Code, Flex, IconButton, InputGroup, InputLeftElement, InputRightElement
+    Grid, GridItem, Heading, Step, StepDescription, StepIcon, StepIndicator, StepNumber, Stepper, StepSeparator, StepStatus, StepTitle, useSteps, Button, Input, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Card, CardBody, Code, Flex, IconButton, InputGroup, InputLeftElement, InputRightElement, Select
   } from "@chakra-ui/react";
 import { ChangeEvent, useEffect, useState } from "react";
 import { Checkbox, CheckboxGroup } from '@chakra-ui/react'
-import { DeleteIcon } from "@chakra-ui/icons";
+import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
+
 
 interface TaskItem {
   id: number;
@@ -17,6 +18,7 @@ interface Task {
   id: number;
   user_id: string;
   name: string;
+  project_id: number;
   description: string;
   task_items: TaskItem[];
 }
@@ -28,12 +30,20 @@ interface ParkingTicket {
   left: number;
 }
 
+interface Projects {
+  id: number;
+  name: string;
+  description: string;
+}
+
 export default function DashboardToday(props: any) {
   const toast = useToast();
   const [theTasks, setTasks] = useState<Task[]>([]);
   const [userId, setUserId] = useState('');
+  const [value, setValue] = useState('');
   const [trigger, setTrigger] = useState(false);
   const [divs, setDivs] = useState<ParkingTicket[]>([]);
+  const [projects, setProjects] = useState<Projects[]>([])
 
   const load = (status: string) => {
     if(status === 'TASK_NOT_CREATED'){
@@ -156,9 +166,31 @@ export default function DashboardToday(props: any) {
         console.error('Request error:', error);
       }
     }
-    const getProfile = async () => {
+    const getProfile = () => {
+      fetch('http://localhost:8009/users/me', {
+        method: "GET",
+        credentials: 'include',
+        headers: {
+          accept: "application/json",
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            console.log(response);
+          } else {
+            return response.json();
+          }
+        })
+        .then((responseData) => {
+          setUserId(responseData.id);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+    const getProjects = async () => {
       try {
-        const response = await fetch('http://localhost:8009/users/me', {
+        const response = await fetch('http://localhost:8009/projects', {
           method: "GET",
           credentials: 'include',
           headers: {
@@ -169,13 +201,16 @@ export default function DashboardToday(props: any) {
         if (!response.ok) {
           console.log(response)
         }else{
-          setUserId(responseData.id)
-          console.log(userId)
+          const ids = responseData.map((data: any) => data.id);
+          console.log(ids)
+          setValue(ids[0])
+          setProjects(responseData)
         }
       }catch (error) {
         console.error(error);
       }
     };
+    getProjects()
     getProfile()
     getTasks()
     setTrigger(false);
@@ -194,7 +229,8 @@ export default function DashboardToday(props: any) {
         body: JSON.stringify({
           name: 'string',
           description: 'string',
-          user_id: userId
+          user_id: userId,
+          project_id: 0
         })
       });
       const responseData = await response.json();
@@ -208,6 +244,7 @@ export default function DashboardToday(props: any) {
           user_id: responseData.user_id,
           name: responseData.name,
           description: responseData.description,
+          project_id: 0,
           task_items: []
         };
       
@@ -320,6 +357,10 @@ export default function DashboardToday(props: any) {
     }
   };
 
+  const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    setValue(event.target.value);
+  };
+
   const parkinTicket = (x: any, y: any) => {
     const boxStyle: React.CSSProperties = {
       position: 'absolute',
@@ -356,9 +397,7 @@ export default function DashboardToday(props: any) {
         boxShadow='inset 0px 0px 10px rgba(0, 0, 0.5, 0.5)'>
           <Box h='100%' w='100%'>
             <Box h='90%' w='100%' overflowY="scroll">
-                <Button colorScheme='teal' size='md' onClick={addTask}>
-                  Button
-                </Button>
+              <AddIcon boxSize={8} onClick={addTask} mb='2'/>
                 {theTasks.length > 0 && (
                   theTasks.map((task: any) => (
                     <div key={task.id}>
@@ -367,9 +406,9 @@ export default function DashboardToday(props: any) {
                           <Box width='100vh'>
                             <Flex direction="column">
                               <Box mb={2}>{task.name}</Box>
-                              <Box width="100%">
+                              {/* <Box width="100%">
                                 <Code colorScheme='red' children="var chakra = 'awesome!'" m='4' />
-                              </Box>
+                              </Box> */}
                               {task.task_items
                                 .sort((a: any, b: any) => a.id - b.id) // Sort the task_items based on item.id
                                 .map((item: any) => (
@@ -401,16 +440,23 @@ export default function DashboardToday(props: any) {
                                 ))}
 
                             </Flex>
-                            <Button colorScheme='teal' size='md' onClick={() => addTaskItem(task.id)}>
-                              Add item
-                            </Button>
-                            <Flex justify="flex-end" mt={4}>
-                            <IconButton
-                              colorScheme="red"
-                              aria-label="Delete"
-                              icon={<DeleteIcon />}
-                              onClick={() => deleteTask(task.id)}
-                            />
+                            <AddIcon boxSize={6} onClick={() => addTaskItem(task.id)} m='2'/>
+                            <Flex justify="space-between" mt={4} align="center">
+                            <label>Select a project:</label>
+                            <select value={value} onChange={handleChange}>
+                              {projects.map((project) => (
+                                <option key={project.id} value={project.id}>
+                                  {project.name}
+                                </option>
+                              ))}
+                            </select>
+                            <p>Selected project ID: {value}</p>
+                              <IconButton
+                                colorScheme="red"
+                                aria-label="Delete"
+                                icon={<DeleteIcon />}
+                                onClick={() => deleteTask(task.id)}
+                              />
                             </Flex>
                           </Box>
                         </CardBody>
