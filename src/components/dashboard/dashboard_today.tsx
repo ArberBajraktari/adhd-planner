@@ -357,8 +357,36 @@ export default function DashboardToday(props: any) {
     }
   };
 
-  const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    setValue(event.target.value);
+  const handleChange = async (event: ChangeEvent<HTMLSelectElement>, task_id: number) => {
+    const selected_project_id =  parseInt(event.target.value);
+    try {
+      const response = await fetch(`http://localhost:8009/tasks/${task_id}`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          project_id: selected_project_id
+        })
+      });
+
+      if (response.ok) {
+        const updatedTasks = [...theTasks];
+        const taskToUpdate = updatedTasks.find(task => task.id === task_id);
+
+        if (taskToUpdate) {
+          taskToUpdate.project_id = selected_project_id;
+        }
+
+        setTasks(updatedTasks);
+      } else {
+        console.error('Error updating task:', response.status);
+      }
+    } catch (error) {
+      console.error('Request error:', error);
+    }
   };
 
   const parkinTicket = (x: any, y: any) => {
@@ -443,14 +471,14 @@ export default function DashboardToday(props: any) {
                             <AddIcon boxSize={6} onClick={() => addTaskItem(task.id)} m='2'/>
                             <Flex justify="space-between" mt={4} align="center">
                             <label>Select a project:</label>
-                            <select value={value} onChange={handleChange}>
+                            <select value={task.project_id} onChange={(event: ChangeEvent<HTMLSelectElement>) => handleChange(event, task.id)}>
                               {projects.map((project) => (
                                 <option key={project.id} value={project.id}>
                                   {project.name}
                                 </option>
                               ))}
                             </select>
-                            <p>Selected project ID: {value}</p>
+                            <p>Selected project ID: {task.project_id}</p>
                               <IconButton
                                 colorScheme="red"
                                 aria-label="Delete"
