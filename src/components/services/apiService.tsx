@@ -5,7 +5,8 @@ class ApiService {
             credentials: 'include',
             });
             const data = await response.json();
-            return data;
+            return {'status' : 'TASK_FETCHED',
+                        'data' : data}
         } catch (error) {
             return { 'status': 'error' };
         }
@@ -20,10 +21,17 @@ class ApiService {
                 accept: "application/json",
             },
           });
-          const data = await response.json();
-          return data;
+        if (response.ok) {
+            const responseData = await response.json();
+            return {
+                'status': 'PROFILE_FETCHED',
+                'data': responseData
+            }
+          } else {
+            return { 'status': 'PROFILE_NOT_FETCHED' };
+          }
         } catch (error) {
-          return { 'status': 'error' };
+            return { 'status': error };
         }
     };
 
@@ -39,9 +47,12 @@ class ApiService {
     
           if (response.ok) {
             const responseData = await response.json();
-            return responseData;
+            return {
+                'status': 'PROJECTS_FETCHED',
+                'data': responseData
+            }
           } else {
-            return { 'status': 'error' };
+            return { 'status': 'PROJECTS_NOT_FETCHED' };
           }
         } catch (error) {
             return { 'status': error };
@@ -76,6 +87,7 @@ class ApiService {
     };
 
     static addTask = async (user_id: string) => {
+      console.log(user_id)
         try {
             const response = await fetch('http://localhost:8009/tasks', {
               method: 'POST',

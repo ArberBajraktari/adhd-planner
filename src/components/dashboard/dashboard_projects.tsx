@@ -72,49 +72,50 @@ export default function DashboardProjects(props: any) {
 
 
   useEffect(() => {
-    const getProfile = async () => {
-      try {
-        const response = await fetch('http://localhost:8009/users/me', {
-          method: "GET",
-          credentials: 'include',
-          headers: {
-            accept: "application/json",
-          },
-        });
-        const responseData = await response.json();
-        if (!response.ok) {
-          console.log(response)
-        }else{
-          setUserId(responseData.id)
+    if(props.logged === "true"){
+      const getProfile = async () => {
+        try {
+          const response = await fetch('http://localhost:8009/users/me', {
+            method: "GET",
+            credentials: 'include',
+            headers: {
+              accept: "application/json",
+            },
+          });
+          const responseData = await response.json();
+          if (!response.ok) {
+            console.log(response)
+          }else{
+            setUserId(responseData.id)
+          }
+        }catch (error) {
+          console.error(error);
         }
-      }catch (error) {
-        console.error(error);
-      }
-    };
-
-    const getProjects = async () => {
-      try {
-        const response = await fetch('http://localhost:8009/projects', {
-          method: "GET",
-          credentials: 'include',
-          headers: {
-            accept: "application/json",
-          },
-        });
-        const responseData = await response.json();
-        if (!response.ok) {
-          console.log(response)
-        }else{
-
-          setProjects(responseData)
+      };
+  
+      const getProjects = async () => {
+        try {
+          const response = await fetch('http://localhost:8009/projects', {
+            method: "GET",
+            credentials: 'include',
+            headers: {
+              accept: "application/json",
+            },
+          });
+          const responseData = await response.json();
+          if (!response.ok) {
+            console.log(response)
+          }else{
+  
+            setProjects(responseData)
+          }
+        }catch (error) {
+          console.error(error);
         }
-      }catch (error) {
-        console.error(error);
-      }
-    };
-    getProfile()
-    getProjects()
-
+      };
+      getProfile()
+      getProjects()
+    }
   }, []);
 
   const handleInputChange = async(event: ChangeEvent<HTMLInputElement>, project_id: number) => {
@@ -152,7 +153,10 @@ export default function DashboardProjects(props: any) {
 
   return (
     <Box bg='#eeecff' h='100%' boxShadow='inset 0px 0px 10px rgba(0, 0, 0, 0.5)'>
-        <Heading>Projects</Heading>
+      <Heading>Projects</Heading>
+       {(() => {
+                if (props.logged === "true") {
+                  return <> 
         <Button colorScheme='teal' size='md' onClick={() => createProject('d', 'd')}>
           Button
         </Button>
@@ -181,6 +185,11 @@ export default function DashboardProjects(props: any) {
           </Card>
           )
         )}
+                  </>
+                }else{
+                  return <h1>Please log in!</h1>
+                }
+          })()}
     </Box>
     );
 }

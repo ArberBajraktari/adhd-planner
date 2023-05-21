@@ -7,6 +7,7 @@ import { Checkbox, CheckboxGroup } from '@chakra-ui/react'
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons"; 
 import ApiService from "../services/apiService";
 import { Task, TaskItem, ParkingTicket, Projects } from "../interfaces/types";
+import { setuid } from "process";
 
 
 export default function DashboardToday(props: any) {
@@ -93,25 +94,35 @@ export default function DashboardToday(props: any) {
   
 
   useEffect(() => {
-    const getTasks = async () => {
-      setTasks(await ApiService.getTasks())
+    if(props.logged === "true"){
+      const getTasks = async () => {
+        const tasksFetched = await ApiService.getTasks()
+        if (tasksFetched.status === 'TASK_FETCHED'){
+          setTasks(tasksFetched.data)
+        }
+        console.log(tasksFetched)
+      }
+      const getProfile = async () => {
+        const userProfile = await ApiService.getProfile()
+        if(userProfile.status === 'PROFILE_FETCHED'){
+          setUserId(userProfile.data.id)
+        }
+      };
+      const getProjects = async () => {
+        const projects = await ApiService.getProjects()
+        if(projects.status === 'PROJECTS_FETCHED'){
+          setProjects(projects.data)
+        }
+      };
+      getProjects()
+      getProfile()
+      getTasks()
+      setTrigger(false);
     }
-    const getProfile = async () => {
-      const userProfile = await ApiService.getProfile()
-      setUserId( userProfile.id)
-    };
-    const getProjects = async () => {
-      const projects = await ApiService.getProjects()
-      setProjects(projects)
-    };
-    getProjects()
-    getProfile()
-    getTasks()
-    setTrigger(false);
-        
-  }, [trigger]);
+  }, [trigger, props.logged]);
 
   const addTask = async () => {
+    console.log(userId)
     const addedTask = await ApiService.addTask(userId)
     if(addedTask.status === 'TASK_ADDED'){
       const newTask: Task = {
@@ -218,7 +229,10 @@ export default function DashboardToday(props: any) {
         boxShadow='inset 0px 0px 10px rgba(0, 0, 0.5, 0.5)'>
           <Box h='100%' w='100%'>
             <Box h='90%' w='100%' overflowY="scroll">
-              <AddIcon boxSize={8} onClick={addTask} mb='2'/>
+            {(() => {
+                if (props.logged === "true") {
+                  return <>
+                   <AddIcon boxSize={8} onClick={addTask} mb='2'/>
                 {theTasks.length > 0 && (
                   theTasks.map((task: any) => (
                     <div key={task.id}>
@@ -265,6 +279,7 @@ export default function DashboardToday(props: any) {
                             <Flex justify="space-between" mt={4} align="center">
                             <label>Select a project:</label>
                             <select value={task.project_id} onChange={(event: ChangeEvent<HTMLSelectElement>) => handleChange(event, task.id)}>
+                                <option value="0">undefined</option> {/* Default option */}
                               {projects.map((project) => (
                                 <option key={project.id} value={project.id}>
                                   {project.name}
@@ -286,6 +301,12 @@ export default function DashboardToday(props: any) {
                   ))
                 )}
 
+                  </>
+                } else {
+                  return <h1>Please log in!</h1>;
+                }
+              })()}
+              
             </Box>
             <Box h='10%' w='100' >
               <Stepper index={activeStep}>
@@ -327,7 +348,5 @@ export default function DashboardToday(props: any) {
 
       </GridItem>
     </Grid>
-
-
     );
 }

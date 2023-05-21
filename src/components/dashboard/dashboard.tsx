@@ -18,15 +18,15 @@ import DashboardProfile from "./dashboard_profile";
             float='left' >
 
               {props.value === 'today' ? (
-              <DashboardToday value={props.value} />
+              <DashboardToday value={props.value} logged={props.logged}/>
             ) : props.value === 'backlog' ? (
-              <DashboardBacklog value={props.value} />
+              <DashboardBacklog value={props.value} logged={props.logged}/>
             ) : props.value === 'projects' ? (
-              <DashboardProjects value={props.value} />
+              <DashboardProjects value={props.value} logged={props.logged}/>
             ) : props.value === 'profile' ? (
               <DashboardProfile value={props.value} />
             ) : (
-              <DashboardReports value={props.value} />
+              <DashboardReports value={props.value} logged={props.logged}/>
             )}
           </Box>
       </div>
