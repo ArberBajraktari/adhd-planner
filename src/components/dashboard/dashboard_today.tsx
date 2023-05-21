@@ -4,37 +4,10 @@ import {
   } from "@chakra-ui/react";
 import { ChangeEvent, useEffect, useState } from "react";
 import { Checkbox, CheckboxGroup } from '@chakra-ui/react'
-import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
+import { AddIcon, DeleteIcon } from "@chakra-ui/icons"; 
+import ApiService from "../services/apiService";
+import { Task, TaskItem, ParkingTicket, Projects } from "../interfaces/types";
 
-
-interface TaskItem {
-  id: number;
-  task_id: number;
-  name: string;
-  done: boolean;
-}
-
-interface Task {
-  id: number;
-  user_id: string;
-  name: string;
-  project_id: number;
-  description: string;
-  task_items: TaskItem[];
-}
-
-interface ParkingTicket {
-  id: number;
-  name: string;
-  top: number;
-  left: number;
-}
-
-interface Projects {
-  id: number;
-  name: string;
-  description: string;
-}
 
 export default function DashboardToday(props: any) {
   const toast = useToast();
@@ -66,62 +39,29 @@ export default function DashboardToday(props: any) {
   }
 
   const handleCheckbox = async (task_id: any, item_id: any, status: boolean) => {
-    try {
-      const response = await fetch(`http://localhost:8009/tasks_item/${item_id}`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ "done": !status })
-      });
-  
-      if (response.ok) {
-        console.log('Task updated successfully');
-        const updatedTasks = [...theTasks];
+    const updatedTaskITem = await ApiService.updateTaskItemStatus(!status, item_id)
+    if(updatedTaskITem.status === 'TASK_ITEM_UPDATED'){
+      const updatedTasks = [...theTasks];
 
-        const taskItemToUpdate = updatedTasks
-          .flatMap(task => task.task_items) 
-          .find(item => item.id === item_id);
+      const taskItemToUpdate = updatedTasks
+        .flatMap(task => task.task_items) 
+        .find(item => item.id === item_id);
 
-          console.log(taskItemToUpdate)
+        console.log(taskItemToUpdate)
 
-        if (taskItemToUpdate) {
-          taskItemToUpdate.done = !taskItemToUpdate.done;
-        }
-
-        setTasks(updatedTasks);
-
-      } else {
-        console.error('Error updating task:', response.status);
+      if (taskItemToUpdate) {
+        taskItemToUpdate.done = !taskItemToUpdate.done;
       }
-    } catch (error) {
-      console.error('Request error:', error);
+
+      setTasks(updatedTasks);
     }
   }
   
   const deleteTask = async (taskId: number) => {
-    try {
-      const response = await fetch(`http://localhost:8009/tasks/${taskId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: {
-          'Accept': 'application/json'
-        }
-      });
-      if (response.ok) {
+    const deletedTask = await ApiService.deleteTask(taskId);
+    if(deletedTask.status == 'TASK_DELETED'){
         const updatedTasks = theTasks.filter(theTasks => theTasks.id !== taskId);
         setTasks(updatedTasks);
-        console.log('Task deleted successfully');
-        // Perform any additional actions after successful deletion
-      } else {
-        console.error('Error deleting task:', response.status);
-        // Handle the error case
-      }
-    } catch (error) {
-      console.error('Request error:', error);
-      // Handle any network or other errors
     }
   };
 
@@ -154,61 +94,15 @@ export default function DashboardToday(props: any) {
 
   useEffect(() => {
     const getTasks = async () => {
-      try {
-        const response = await fetch('http://localhost:8009/tasks_full', {
-          credentials: 'include',
-        });
-        const data = await response.json();
-        setTasks(data);
-        console.log('what')
-        console.log(data);
-      } catch (error) {
-        console.error('Request error:', error);
-      }
+      setTasks(await ApiService.getTasks())
     }
-    const getProfile = () => {
-      fetch('http://localhost:8009/users/me', {
-        method: "GET",
-        credentials: 'include',
-        headers: {
-          accept: "application/json",
-        },
-      })
-        .then((response) => {
-          if (!response.ok) {
-            console.log(response);
-          } else {
-            return response.json();
-          }
-        })
-        .then((responseData) => {
-          setUserId(responseData.id);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+    const getProfile = async () => {
+      const userProfile = await ApiService.getProfile()
+      setUserId( userProfile.id)
     };
     const getProjects = async () => {
-      try {
-        const response = await fetch('http://localhost:8009/projects', {
-          method: "GET",
-          credentials: 'include',
-          headers: {
-            accept: "application/json",
-          },
-        });
-        const responseData = await response.json();
-        if (!response.ok) {
-          console.log(response)
-        }else{
-          const ids = responseData.map((data: any) => data.id);
-          console.log(ids)
-          setValue(ids[0])
-          setProjects(responseData)
-        }
-      }catch (error) {
-        console.error(error);
-      }
+      const projects = await ApiService.getProjects()
+      setProjects(projects)
     };
     getProjects()
     getProfile()
@@ -218,71 +112,23 @@ export default function DashboardToday(props: any) {
   }, [trigger]);
 
   const addTask = async () => {
-    try {
-      const response = await fetch('http://localhost:8009/tasks', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          name: 'string',
-          description: 'string',
-          user_id: userId,
-          project_id: 0
-        })
-      });
-      const responseData = await response.json();
-      if (!response.ok) {
-        load('TASK_NOT_CREATED')
-      } else {
-        console.log(responseData)
-        //setTasks([...theTasks, newTask]);
-        const newTask: Task = {
-          id: responseData.id,
-          user_id: responseData.user_id,
-          name: responseData.name,
-          description: responseData.description,
-          project_id: 0,
-          task_items: []
-        };
-      
-        setTasks(prevTasks => [...prevTasks, newTask]);
-        load('TASK_CREATED')
-      }
-    }catch (error) {
-      console.error(error);
+    const addedTask = await ApiService.addTask(userId)
+    if(addedTask.status === 'TASK_ADDED'){
+      const newTask: Task = {
+        id: addedTask.data.id,
+        user_id: addedTask.data.user_id,
+        name: addedTask.data.name,
+        description: addedTask.data.description,
+        project_id: 0,
+        task_items: []
+      };
+      setTasks(prevTasks => [...prevTasks, newTask]);
     }
   }
 
   const addTaskItem = async (task_id: any) => {
-    try {
-      const response = await fetch('http://localhost:8009/tasks_item', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          name: 'item 3',
-          task_id: task_id,
-          done: false
-        })
-      });
-  
-      if (response.ok) {
-        // Item added successfully
-        console.log('Item added successfully');
-        setTrigger(true);
-      } else {
-        // Item addition failed
-        console.error('Failed to add item');
-      }
-    } catch (error) {
-      console.error('Request error:', error);
-    }
+    const addedTaskItem = await ApiService.addTaskItem(task_id)
+    setTrigger(true);
   }
 
   const handleParkingLot = async (event: React.MouseEvent<HTMLDivElement>) => {
@@ -290,60 +136,26 @@ export default function DashboardToday(props: any) {
     console.log("Clicked position:", clientX, clientY);
     parkinTicket(clientX, clientY)
   }
-
-  const handleParkingLotDesign = async (event: React.MouseEvent<HTMLDivElement>) => {
-    console.log("Clicked position:");
-  }
-  
-
-  const steps = [
-    { title: 'First', description: 'Contact Info' },
-    { title: 'Second', description: 'Date & Time' },
-    { title: 'Third', description: 'Select Rooms' },
-    { title: 'Four', description: 'Select Rooms' },
-    { title: 'Five', description: 'Select Rooms' },
-  ]
-
-  const tasks = [
-    { title: 'First', description: 'Contact Info' },
-    { title: 'Second', description: 'Date & Time' },
-    { title: 'Third', description: 'Date & Time' },
-  ]
   
   const { activeStep } = useSteps({
-    index: 2,
-    count: steps.length,
+    index: 0,
+    count: theTasks.length,
   })
 
   const changeItem = async (value: string, item_id: number) => {
-    try {
-      const response = await fetch(`http://localhost:8009/tasks_item/${item_id}`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ "name": value })
-      });
-      if (response.ok) {
-        const updatedTasks = [...theTasks];
-  
-        const taskItemToUpdate = updatedTasks
-          .flatMap(task => task.task_items) 
-          .find(item => item.id === item_id);
-  
-        if (taskItemToUpdate) {
-          taskItemToUpdate.name = value;
-        }
-  
-        setTasks(updatedTasks);
-      } else {
-        console.error('Error updating task:', response.status);
-      }
-    } catch (error) {
-      console.error('Request error:', error);
+    await ApiService.updateTaskItemName(value, item_id)
+    const updatedTasks = [...theTasks];
+      
+    const taskItemToUpdate = updatedTasks
+      .flatMap(task => task.task_items) 
+      .find(item => item.id === item_id);
+
+    if (taskItemToUpdate) {
+      taskItemToUpdate.name = value;
     }
+
+    setTasks(updatedTasks);
+    
   };
   
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>, item_id: number) => {
@@ -359,33 +171,14 @@ export default function DashboardToday(props: any) {
 
   const handleChange = async (event: ChangeEvent<HTMLSelectElement>, task_id: number) => {
     const selected_project_id =  parseInt(event.target.value);
-    try {
-      const response = await fetch(`http://localhost:8009/tasks/${task_id}`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          project_id: selected_project_id
-        })
-      });
-
-      if (response.ok) {
-        const updatedTasks = [...theTasks];
-        const taskToUpdate = updatedTasks.find(task => task.id === task_id);
-
-        if (taskToUpdate) {
-          taskToUpdate.project_id = selected_project_id;
-        }
-
-        setTasks(updatedTasks);
-      } else {
-        console.error('Error updating task:', response.status);
+    const updatedProjectTask = await ApiService.updateProjectId(selected_project_id, task_id )
+    if(updatedProjectTask.status === 'PROJECT_ID_UPDATED'){
+      const updatedTasks = [...theTasks];
+      const taskToUpdate = updatedTasks.find(task => task.id === task_id);
+      if (taskToUpdate) {
+        taskToUpdate.project_id = selected_project_id;
       }
-    } catch (error) {
-      console.error('Request error:', error);
+      setTasks(updatedTasks);
     }
   };
 
@@ -496,7 +289,7 @@ export default function DashboardToday(props: any) {
             </Box>
             <Box h='10%' w='100' >
               <Stepper index={activeStep}>
-                {tasks.map((step, index) => (
+                {theTasks.map((step, index) => (
                   <Step key={index}>
                     <StepIndicator>
                       <StepStatus
@@ -507,7 +300,7 @@ export default function DashboardToday(props: any) {
                     </StepIndicator>
 
                     <Box flexShrink='0'>
-                      <StepTitle>{step.title}</StepTitle>
+                      <StepTitle>{step.name}</StepTitle>
                       <StepDescription>{step.description}</StepDescription>
                     </Box>
 
